@@ -1,3 +1,4 @@
+package ru.friends;
 
 public class User {
 

@@ -1,3 +1,5 @@
+package ru.friends;
+
 import com.google.gson.Gson;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -45,11 +47,11 @@ public class RequestFriendsFromVk extends TimerTask {
             resp = resp.split("<!>\\{" + '"' + "all" + '"' + ":\\[\\['")[1];
             resp = resp.split("'\\]\\]}<!>")[0];
             String[] lines = Pattern.compile("']\n,\\['").split(resp);
-            List<User> friends = new ArrayList<User>();
+            List<ru.friends.User> friends = new ArrayList<ru.friends.User>();
             Pattern pattern = Pattern.compile("','");
             for(String line : lines) {
                 String[] fields = pattern.split(line);
-                friends.add(new User(Integer.parseInt(fields[0]),fields[1],fields[2],"1".equals(fields[3]) ? User.Gender.FEMALE : User.Gender.MALE,fields[5]));
+                friends.add(new ru.friends.User(Integer.parseInt(fields[0]),fields[1],fields[2],"1".equals(fields[3]) ? ru.friends.User.Gender.FEMALE : ru.friends.User.Gender.MALE,fields[5]));
             }
             */
 

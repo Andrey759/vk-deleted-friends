@@ -1,3 +1,5 @@
+package ru.friends;
+
 import java.util.Calendar;
 
 public class DelUser extends User {
