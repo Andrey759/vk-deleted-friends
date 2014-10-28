@@ -1,5 +1,6 @@
 package ru.friends;
 
+@Deprecated
 public class User {
 
     private int id;

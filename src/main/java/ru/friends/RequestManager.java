@@ -8,8 +8,8 @@ import java.util.Timer;
 
 public class RequestManager {
 
-    private final String url = "http://vk.com/al_friends.php?act=load_friends_silent&al=1&gid=0&id=165428827";
-    private final String cookie = "remixstid=855287052_ce92e85b99ecfc1cac; remixscreen_depth=24; audio_vol=13; remixrefkey=51c0165d2aaeb8ebf5; remixflash=15.0.0; remixlang=0; remixdt=0; remixseenads=1; remixtst=1090caaf; remixsid=8cd78f3002f6724e1260bd8da778aa79b786b52c4bc6e4cc1a294";
+    private final String url = "http://vk.com/al_friends.php?act=load_friends_silent&al=1&gid=0&id=";
+    private final String cookie = "";
 
     private static RequestManager INSTANCE = new RequestManager();
     private HttpClient client = new HttpClient();

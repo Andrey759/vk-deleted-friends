@@ -6,6 +6,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 
 import java.util.*;
 
+@Deprecated
 public class RequestFriendsFromVk extends TimerTask {
 
     private HttpClient client;

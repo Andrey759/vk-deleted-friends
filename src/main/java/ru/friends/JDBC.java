@@ -1,5 +1,7 @@
 package ru.friends;
 
+import ru.friends.util.HibernateUtil;
+
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
@@ -56,6 +58,7 @@ public class JDBC {
         ResultSet result = execute(sql);
         List<DelUser> collection = new ArrayList<>(result.getFetchSize());
         while(result.next()) {
+            //java.sql.Timestamp;
             Date date = new Date(result.getDate("del_date").getTime() + result.getTime("del_date").getTime());
             date.setHours(result.getTime("del_date").getHours());
             Calendar calendar = Calendar.getInstance();

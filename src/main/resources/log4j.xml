@@ -1,0 +1,42 @@
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.3//EN" "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
+
+    <appender name="CONSOLE_LOG" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                   value="%-5p %d{HH:mm:ss,SSS} %t (%-c.%M():%L) [%x] - %m%n"/>
+        </layout>
+    </appender>
+
+<appender name="file" class="org.apache.log4j.FileAppender">
+<param name="file" value="/log/mylogfile.log" />
+<param name="append" value="false" />
+<param name="threshold" value="trace" />
+<layout class="org.apache.log4j.PatternLayout">
+<param name="ConversionPattern" value="%d{ISO8601} %-5p [%c{1}] - %m%n" />
+</layout>
+</appender>
+
+
+
+    <logger name="org.hibernate" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="CONSOLE_LOG" />
+    </logger>
+
+    <logger name="org.springframework" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="CONSOLE_LOG"/>
+    </logger>
+
+    <logger name="ru.friends" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="CONSOLE_LOG"/>
+    </logger>
+
+    <root>
+        <priority value="INFO"/>
+        <appender-ref ref="CONSOLE_LOG"/>
+    </root>
+
+</log4j:configuration>

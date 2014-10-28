@@ -2,6 +2,7 @@ package ru.friends;
 
 import java.util.Calendar;
 
+@Deprecated
 public class DelUser extends User {
 
     private Calendar date;
