@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
-import ru.friends.model.Users;
+import ru.friends.model.User;
 import ru.friends.util.HibernateUtil;
 
 @Repository("usersDAO")
@@ -13,12 +13,12 @@ public class UsersDAOImpl implements UsersDAO {
     private static Logger log = Logger.getLogger(UsersDAOImpl.class);
 
     @Override
-    public Users getById(int id) {
+    public User getById(int id) {
         Session session = HibernateUtil.getSession();
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            Users user = (Users) session.get(Users.class, id);
+            User user = (User) session.get(User.class, id);
             tx.commit();
             return user;
         } catch (Throwable ex) {
@@ -31,7 +31,7 @@ public class UsersDAOImpl implements UsersDAO {
     }
 
     @Override
-    public void save(Users user) {
+    public void save(User user) {
         Session session = HibernateUtil.getSession();
         Transaction tx = null;
         try {

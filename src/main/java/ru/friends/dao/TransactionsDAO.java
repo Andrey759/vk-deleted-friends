@@ -1,11 +1,11 @@
 package ru.friends.dao;
 
-import ru.friends.model.Transactions;
+import ru.friends.model.Transaction;
 
 public interface TransactionsDAO {
 
-    public Transactions getById(int id);
+    public Transaction getById(int id);
 
-    public void save(Transactions transaction);
+    public void save(Transaction transaction);
 
 }

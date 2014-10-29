@@ -2,9 +2,8 @@ package ru.friends.dao;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
-import ru.friends.model.Transactions;
+import ru.friends.model.Transaction;
 import ru.friends.util.HibernateUtil;
 
 @Repository("transactionsDAO")
@@ -13,12 +12,12 @@ public class TransactionsDAOImpl implements TransactionsDAO {
     private static Logger log = Logger.getLogger(TransactionsDAOImpl.class);
 
     @Override
-    public Transactions getById(int id) {
+    public Transaction getById(int id) {
         Session session = HibernateUtil.getSession();
-        Transaction tx = null;
+        org.hibernate.Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            Transactions transaction = (Transactions) session.get(Transactions.class, id);
+            Transaction transaction = (Transaction) session.get(Transaction.class, id);
             tx.commit();
             return transaction;
         } catch (Throwable ex) {
@@ -31,9 +30,9 @@ public class TransactionsDAOImpl implements TransactionsDAO {
     }
 
     @Override
-    public void save(Transactions transaction) {
+    public void save(Transaction transaction) {
         Session session = HibernateUtil.getSession();
-        Transaction tx = null;
+        org.hibernate.Transaction tx = null;
         try {
             tx = session.beginTransaction();
             session.save(transaction);

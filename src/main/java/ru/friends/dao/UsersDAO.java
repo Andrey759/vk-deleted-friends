@@ -1,11 +1,11 @@
 package ru.friends.dao;
 
-import ru.friends.model.Users;
+import ru.friends.model.User;
 
 public interface UsersDAO {
 
-    public Users getById(int id);
+    public User getById(int id);
 
-    public void save(Users user);
+    public void save(User user);
 
 }

@@ -6,6 +6,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import java.sql.SQLException;
 import java.util.Timer;
 
+@Deprecated
 public class RequestManager {
 
     private final String url = "http://vk.com/al_friends.php?act=load_friends_silent&al=1&gid=0&id=";

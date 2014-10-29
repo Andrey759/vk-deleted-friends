@@ -2,58 +2,52 @@ package ru.friends.model.VK;
 
 import com.google.gson.Gson;
 import ru.friends.User;
-import ru.friends.model.Friends;
-
+import ru.friends.model.Friend;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class VKFriendsDAO {
 
     private VKRequestsManager vkRequestsManager = new VKRequestsManager();
     private static final String url = "http://vk.com/al_friends.php?act=load_friends_silent&al=1&gid=0&id=";
 
-    private static List<User> parseJSON(String json) {
+    private static List<Friend> parseJSON(String json) {
         Gson gson = new Gson();
         Map root = gson.fromJson(json, Map.class);
         if (!root.containsKey("all"))
             return null;
         List friends = (ArrayList) root.get("all");
-        List<User> result = new ArrayList<>(friends.size());
-        List<Friends> result2 = new ArrayList<>(friends.size());
-        for (List<String> friend : (List<List<String>>) friends) {
-            int id = Integer.valueOf(friend.get(0));
-            String pic = friend.get(1);
-            String page = friend.get(2);
-            boolean isFemale = "1".equals(friend.get(3));
-            String name = friend.get(5);
-            result.add(new User(id, pic, page, isFemale ? User.Gender.FEMALE : User.Gender.MALE, name));
-            //result.add(new Friends());
-        }
+        List<Friend> result = new ArrayList<>(friends.size());
+        for (List<String> friend : (List<List<String>>) friends)
+            result.add(new Friend(friend.get(0), friend.get(1), friend.get(2), friend.get(3), friend.get(5)));
         return result;
     }
 
-    public List getFriendList(int id) throws IOException {
-        String response = vkRequestsManager.executeReqest(url + id);
-        /*
-        resp = resp.split("<!>\\{" + '"' + "all" + '"' + ":\\[\\['")[1];
-        resp = resp.split("'\\]\\]}<!>")[0];
-        String[] lines = Pattern.compile("']\n,\\['").split(resp);
-        List<ru.friends.User> friends = new ArrayList<ru.friends.User>();
+    private static List<Friend> parseByReg(String json) {
+        json = json.split("<!>\\{" + '"' + "all" + '"' + ":\\[\\['")[1];
+        json = json.split("'\\]\\]}<!>")[0];
+        String[] lines = Pattern.compile("']\n,\\['").split(json);
+        List<Friend> friends = new ArrayList<>();
         Pattern pattern = Pattern.compile("','");
         for(String line : lines) {
             String[] fields = pattern.split(line);
-            friends.add(new ru.friends.User(Integer.parseInt(fields[0]),fields[1],fields[2],"1".equals(fields[3]) ? ru.friends.User.Gender.FEMALE : ru.friends.User.Gender.MALE,fields[5]));
+            friends.add(new Friend(fields[0], fields[1], fields[2], fields[3], fields[5]));
         }
-        */
+        return friends;
+    }
 
+    public List<Friend> getFriendList(int id) throws IOException {
+        String response = vkRequestsManager.executeReqest(url + id);
         int p1 = response.indexOf("{");
         int p2 = response.indexOf("}", p1);
         response = response.substring(p1, p2 + 1);
-        final Collection<User> friends = parseJSON(response);
-        return null;
+        final List<Friend> friends = parseJSON(response);
+        //final Collection<Friend> friends = parseByReg(response);  //Асболютно эквивалентно строке выше
+        return friends;
     }
 
 }

@@ -31,14 +31,14 @@ public class MainController {
     public void show(HttpServletRequest request, HttpServletResponse response,
                      @RequestParam(defaultValue = "@null", required = false, value = "var2") String var1
                      ) throws IOException {
-        Friends f = new Friends();
+        Friend f = new Friend();
         f.setGender((byte) 1);
         f.setName("Masha");
         f.setPage("page");
         f.setPic("/pic");
         // workers
-        //friendsDAO.save(f);
-        response.getWriter().println("Hello World! " + var1);
+        friendsDAO.save(f);
+        //response.getWriter().println("Hello World! " + var1);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/reg")
@@ -48,17 +48,18 @@ public class MainController {
                      @RequestParam int interval
     ) throws IOException {
         try {
-            Users user = new Users();
+            User user = new User();
             user.setId(id);
             user.setPass(pass);
             user.setInterval(new Timestamp(interval * 60 * 1000));
+            System.out.println("!!! " + new Timestamp(interval * 60 * 1000).getTime());
             usersDAO.save(user);
             response.getWriter().println(user);
             /*Friends friend = new Friends();
             friend.setId(id);
             friend.setName("Trololo");
             friend.setGender((byte)1);*/
-            response.getWriter().println("<br><br><br>");
+            response.getWriter().println("\n");
             response.getWriter().println(friendsDAO.getById(1050));
         } catch (Throwable ex) {
             log.fatal(ex);

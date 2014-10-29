@@ -1,11 +1,22 @@
 package ru.friends.model.VK;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.friends.dao.FriendsDAO;
+import ru.friends.model.*;
 import java.util.List;
 
 public class VKFriendListManager {
 
     private VKFriendsDAO vkFriendsDAO = new VKFriendsDAO();
-    private List friends = null;
+    private User user;
+    private List<Friend> friends;
+
+    @Autowired
+    private FriendsDAO friendsDAO;
+
+    public VKFriendListManager(User user) {
+        this.user = user;
+    }
 
     private List getDifference(List a, List b) {
         return null;

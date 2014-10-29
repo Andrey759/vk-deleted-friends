@@ -6,6 +6,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
+@Deprecated
 public class JDBC {
 
     private String url = "jdbc:mysql://127.0.0.1:3306/vk_friends";

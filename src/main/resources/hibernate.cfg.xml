@@ -11,9 +11,11 @@
         <property name="show_sql">true</property>
         <property name="format_sql">true</property>
         <property name="use_sql_comments">true</property>
+        <!--
         <mapping class="ru.friends.model.Friends"/>
         <mapping class="ru.friends.model.Transactions"/>
         <mapping class="ru.friends.model.Users"/>
+        -->
         <!-- DB schema will be updated if needed -->
         <!-- <property name="hbm2ddl.auto">update</property> -->
 
