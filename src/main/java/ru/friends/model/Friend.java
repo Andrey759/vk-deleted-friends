@@ -3,8 +3,10 @@ package ru.friends.model;
 import javax.persistence.*;
 import java.util.List;
 
+// select * from schema_name.friends
+
 @Entity
-@Table(name = "friends", schema = "", catalog = "vk_friends")
+@Table(name = "friends", schema = "schema_name", catalog = "vk_friends")
 public class Friend {
     private int id;
     private String pic;
@@ -25,27 +27,7 @@ public class Friend {
     public Friend(int id, String pic, String page, Gender gender, String name) {
         this(id, pic, page, gender.getByte(), name);
     }
-    public Friend(int id, String pic, String page, boolean gender, String name) {
-        this(id, pic, page, Gender.getGender(gender), name);
-    }
-    public Friend(int id, String pic, String page, int gender, String name) {
-        this(id, pic, page, Gender.getGender(gender), name);
-    }
-    public Friend(int id, String pic, String page, String gender, String name) {
-        this(id, pic, page, Gender.getGender(gender), name);
-    }
-    public Friend(String id, String pic, String page, byte gender, String name) {
-        this(Integer.valueOf(id), pic, page, gender, name);
-    }
-    public Friend(String id, String pic, String page, Gender gender, String name) {
-        this(Integer.valueOf(id), pic, page, gender.getByte(), name);
-    }
-    public Friend(String id, String pic, String page, boolean gender, String name) {
-        this(Integer.valueOf(id), pic, page, Gender.getGender(gender), name);
-    }
-    public Friend(String id, String pic, String page, int gender, String name) {
-        this(Integer.valueOf(id), pic, page, Gender.getGender(gender), name);
-    }
+
     public Friend(String id, String pic, String page, String gender, String name) {
         this(Integer.valueOf(id), pic, page, Gender.getGender(gender), name);
     }

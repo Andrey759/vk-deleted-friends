@@ -41,6 +41,7 @@ public class User {
     }
 
     @Basic
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "interval", nullable = false, insertable = true, updatable = true)
     public Timestamp getInterval() {
         return interval;
