@@ -1,19 +1,16 @@
-package ru.friends.model.VK;
+package ru.friends.service;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.methods.PostMethod;
 import java.io.IOException;
 
-public class VKRequestsManager {
+class RequestManager {
 
-    private static final String cookie = "";
-    private HttpClient client;
-    private PostMethod postMethod;
-
-    public VKRequestsManager() {
-        client = new HttpClient();
-        postMethod = new PostMethod();
+    public static String executeReqest(String url) throws IOException {
+        final String cookie = "";
+        HttpClient client = new HttpClient();
+        PostMethod postMethod = new PostMethod();
 
         postMethod.addRequestHeader("Referer", "http://vk.com/friends?section=all");
         postMethod.addRequestHeader("Host", "vk.com");
@@ -27,9 +24,7 @@ public class VKRequestsManager {
         //postMethod.addRequestHeader("Content-Length", "45");
         postMethod.addRequestHeader("Pragma", "no-cache");
         postMethod.addRequestHeader("Cache-control", "no-cache");
-    }
 
-    public String executeReqest(String url) throws IOException {
         postMethod.setURI(new URI(url, true, postMethod.getParams().getUriCharset()));
         int status = client.executeMethod(postMethod);
         System.out.println("STATUS = " + status);

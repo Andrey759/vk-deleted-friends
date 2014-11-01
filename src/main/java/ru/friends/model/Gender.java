@@ -1,8 +1,9 @@
 package ru.friends.model;
 
 public enum Gender {
-        MALE((byte)0),
-        FEMALE((byte)1);
+        UNDEFINED((byte)0),
+        FEMALE((byte)1),
+        MALE((byte)2);
 
     private byte value;
 
@@ -15,19 +16,19 @@ public enum Gender {
     }
 
     public static Gender getGender(int value) {
-        return value == 1 ? FEMALE : value == 0 ? MALE : null;
+        return value == 2 ? MALE : value == 1 ? FEMALE : UNDEFINED;
     }
 
     public static Gender getGender(byte value) {
-        return value == (byte)1 ? FEMALE : value == (byte)0 ? MALE : null;
+        return value == (byte)2 ? MALE : value == (byte)1 ? FEMALE : UNDEFINED;
     }
 
     public static Gender getGender(boolean value) {
-        return value ? FEMALE : MALE;
+        return value ? MALE : FEMALE;
     }
 
     public static Gender getGender(String value) {
-        return "1".equals(value) ? FEMALE : "0".equals(value) ? MALE : null;
+        return "2".equals(value) ? MALE : "1".equals(value) ? FEMALE : UNDEFINED;
     }
 
     }

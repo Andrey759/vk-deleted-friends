@@ -6,7 +6,7 @@ import java.util.List;
 // select * from schema_name.friends
 
 @Entity
-@Table(name = "friends", schema = "schema_name", catalog = "vk_friends")
+@Table(name = "friends", schema = "", catalog = "vk_friends")
 public class Friend {
     private int id;
     private String pic;
@@ -73,12 +73,6 @@ public class Friend {
     }
     public void setGender(Gender gender) {
         setGender(gender.getByte());
-    }
-    public void setGender(boolean gender) {
-        setGender(Gender.getGender(gender));
-    }
-    public void setGender(int gender) {
-        setGender(Gender.getGender(gender));
     }
     public void setGender(String gender) {
         setGender(Gender.getGender(gender));

@@ -1,18 +1,16 @@
-package ru.friends.model.VK;
+package ru.friends.service;
 
 import com.google.gson.Gson;
-import ru.friends.User;
 import ru.friends.model.Friend;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class VKFriendsDAO {
+class VKFriendsDAOImpl implements RequestDAO<Friend> {
 
-    private VKRequestsManager vkRequestsManager = new VKRequestsManager();
+    private RequestManager requestsManager = new RequestManager();
     private static final String url = "http://vk.com/al_friends.php?act=load_friends_silent&al=1&gid=0&id=";
 
     private static List<Friend> parseJSON(String json) {
@@ -40,8 +38,9 @@ public class VKFriendsDAO {
         return friends;
     }
 
-    public List<Friend> getFriendList(int id) throws IOException {
-        String response = vkRequestsManager.executeReqest(url + id);
+    @Override
+    public List<Friend> getResponseAsList(String page) throws IOException {
+        String response = RequestManager.executeReqest(url + page);
         int p1 = response.indexOf("{");
         int p2 = response.indexOf("}", p1);
         response = response.substring(p1, p2 + 1);

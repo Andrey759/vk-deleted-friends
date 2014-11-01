@@ -2,6 +2,7 @@ package ru.friends.model;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -9,12 +10,12 @@ import java.util.List;
 public class User {
     private int id;
     private String pass;
-    private Timestamp interval;
+    private Date interval;
     private List<Transaction> transactions;
 
     public User() { }
 
-    public User(int id, String pass, Timestamp interval) {
+    public User(int id, String pass, Date interval) {
         this.id = id;
         this.pass = pass;
         this.interval = interval;
@@ -41,13 +42,13 @@ public class User {
     }
 
     @Basic
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "interval", nullable = false, insertable = true, updatable = true)
-    public Timestamp getInterval() {
+    @Temporal(TemporalType.DATE)
+    @Column(name = "`interval`", nullable = false, insertable = true, updatable = true)
+    public Date getInterval() {
         return interval;
     }
 
-    public void setInterval(Timestamp interval) {
+    public void setInterval(Date interval) {
         this.interval = interval;
     }
 

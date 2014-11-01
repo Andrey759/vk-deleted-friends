@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.friends.dao.*;
 import ru.friends.model.*;
+import ru.friends.service.VKFriendListManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,17 +29,26 @@ public class MainController {
     private UsersDAO usersDAO;
 
     @RequestMapping(method = RequestMethod.GET, value = "/")
+    public void begin(HttpServletResponse response) throws IOException {
+        //friendsDAO.getFriends(1974730);
+        //response.getWriter().println(new VKFriendListManager(usersDAO.getById(100500)).getFriends());
+        response.getWriter().println("!!!");
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/show")
     public void show(HttpServletRequest request, HttpServletResponse response,
                      @RequestParam(defaultValue = "@null", required = false, value = "var2") String var1
                      ) throws IOException {
-        Friend f = new Friend();
+        /*Friend f = new Friend();
         f.setGender((byte) 1);
         f.setName("Masha");
         f.setPage("page");
-        f.setPic("/pic");
+        f.setPic("/pic");*/
         // workers
-        friendsDAO.save(f);
+        //friendsDAO.save(f);
         //response.getWriter().println("Hello World! " + var1);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().println(new VKFriendListManager(usersDAO.getById(822284)).getFriendsFromVK());
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/reg")
