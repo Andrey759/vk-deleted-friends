@@ -2,7 +2,7 @@ package ru.friends.model;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 @Entity
@@ -10,12 +10,13 @@ import java.util.List;
 public class User {
     private int id;
     private String pass;
-    private Date interval;
+    private Calendar interval;
+    private Calendar lastupdate;
     private List<Transaction> transactions;
 
     public User() { }
 
-    public User(int id, String pass, Date interval) {
+    public User(int id, String pass, Calendar interval) {
         this.id = id;
         this.pass = pass;
         this.interval = interval;
@@ -42,17 +43,28 @@ public class User {
     }
 
     @Basic
-    @Temporal(TemporalType.DATE)
-    @Column(name = "`interval`", nullable = false, insertable = true, updatable = true)
-    public Date getInterval() {
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "`interval`", nullable = true, insertable = true, updatable = true)
+    public Calendar getInterval() {
         return interval;
     }
 
-    public void setInterval(Date interval) {
+    public void setInterval(Calendar interval) {
         this.interval = interval;
     }
 
-    @OneToMany
+    @Basic
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "lastupdate", nullable = true, insertable = true, updatable = true)
+    public Calendar getLastUpdate() {
+        return lastupdate;
+    }
+
+    public void setLastUpdate(Calendar lastUpdate) {
+        this.lastupdate = lastUpdate;
+    }
+
+    @OneToMany(mappedBy = "owner")
     public List<Transaction> getTransactions() {
         return transactions;
     }
@@ -85,8 +97,9 @@ public class User {
 
     @Override
     public String toString() {
-        return "Users{" +
-                "id=" + id +
-                '}';
+        return "id" + id +
+               //"   interval " + (interval.getTime() / (60 * 1000)) +
+               "   interval " + interval.getTimeInMillis() +
+               "   lastupdate " + lastupdate;
     }
 }

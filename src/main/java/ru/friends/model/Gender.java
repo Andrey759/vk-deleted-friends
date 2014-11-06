@@ -31,4 +31,9 @@ public enum Gender {
         return "2".equals(value) ? MALE : "1".equals(value) ? FEMALE : UNDEFINED;
     }
 
+    @Override
+    public String toString() {
+        return this.getClass().isInstance(Gender.MALE) ? "Муж." : this.getClass().isInstance(Gender.MALE) ? "Жен." : "Транс.";
     }
+
+}

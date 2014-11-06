@@ -10,26 +10,26 @@ public class Transaction {
     private Timestamp dateMin;
     private Timestamp dateMax;
     private byte deleted;
-    private Friend friend_id;
+    private Friend friend;
     private User owner;
 
     public Transaction() { }
 
-    public Transaction(int id, Timestamp dateMin, Timestamp dateMax, byte deleted, Friend friend_id, User owner) {
+    public Transaction(int id, Timestamp dateMin, Timestamp dateMax, byte deleted, Friend friend, User owner) {
         this.id = id;
         this.dateMin = dateMin;
         this.dateMax = dateMax;
         this.deleted = deleted;
-        this.friend_id = friend_id;
+        this.friend = friend;
         this.owner = owner;
     }
 
-    public Transaction(int id, Timestamp dateMin, Timestamp dateMax, int deleted, Friend friend_id, User owner) {
-        this(id, dateMin, dateMax, (byte)deleted, friend_id, owner);
+    public Transaction(int id, Timestamp dateMin, Timestamp dateMax, int deleted, Friend friend, User owner) {
+        this(id, dateMin, dateMax, (byte)deleted, friend, owner);
     }
 
-    public Transaction(int id, Timestamp dateMin, Timestamp dateMax, boolean deleted, Friend friend_id, User owner) {
-        this(id, dateMin, dateMax, deleted ? (byte)1 : (byte)0, friend_id, owner);
+    public Transaction(int id, Timestamp dateMin, Timestamp dateMax, boolean deleted, Friend friend, User owner) {
+        this(id, dateMin, dateMax, deleted ? (byte)1 : (byte)0, friend, owner);
     }
 
     @Id
@@ -78,17 +78,19 @@ public class Transaction {
         setDeleted((byte)deleted);
     }
 
-    //@Column(name = "friend_id", nullable = false, insertable = true, updatable = true)
+    //@Column(name = "friend", nullable = false, insertable = true, updatable = true)
     @ManyToOne
+    @JoinColumn(name = "friend_id")
     public Friend getFriend() {
-        return friend_id;
+        return friend;
     }
 
     public void setFriend(Friend friend) {
-        this.friend_id = friend;
+        this.friend = friend;
     }
 
     @ManyToOne
+    @JoinColumn(name = "owner")
     public User getOwner() {
         return owner;
     }
@@ -123,13 +125,11 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transactions{" +
-                "id=" + id +
+        return  id +
                 ", dateMin=" + dateMin +
                 ", dateMax=" + dateMax +
                 ", deleted=" + deleted +
-                ", friend_id=" + friend_id +
-                ", owner=" + owner +
-                '}';
+                ", friend=" + friend +
+                ", owner=" + owner;
     }
 }

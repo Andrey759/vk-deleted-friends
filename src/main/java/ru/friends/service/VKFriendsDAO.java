@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-class VKFriendsDAOImpl implements RequestDAO<Friend> {
+class VKFriendsDAO {
 
-    private RequestManager requestsManager = new RequestManager();
     private static final String url = "http://vk.com/al_friends.php?act=load_friends_silent&al=1&gid=0&id=";
+
+    private VKFriendsDAO() { }
 
     private static List<Friend> parseJSON(String json) {
         Gson gson = new Gson();
@@ -38,8 +39,7 @@ class VKFriendsDAOImpl implements RequestDAO<Friend> {
         return friends;
     }
 
-    @Override
-    public List<Friend> getResponseAsList(String page) throws IOException {
+    public static List<Friend> getResponseAsList(String page) throws IOException {
         String response = RequestManager.executeReqest(url + page);
         int p1 = response.indexOf("{");
         int p2 = response.indexOf("}", p1);

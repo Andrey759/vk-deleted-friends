@@ -88,8 +88,7 @@ public class Friend {
         this.name = name;
     }
 
-    //@OneToMany(mappedBy = "friends")
-    @OneToMany
+    @OneToMany(mappedBy = "friend")
     public List<Transaction> getTransactions() {
         return transactions;
     }
@@ -126,12 +125,8 @@ public class Friend {
 
     @Override
     public String toString() {
-        return "Friends{" +
-                "id=" + id +
-                ", pic='" + pic + '\'' +
-                ", page=" + page +
-                ", gender='" + gender + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+        return  "id" + id +
+                " " + name +
+                " (" + Gender.getGender(gender) + ")";
     }
 }
