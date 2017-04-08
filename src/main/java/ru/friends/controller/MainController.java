@@ -1,60 +1,45 @@
 package ru.friends.controller;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.friends.dao.*;
-import ru.friends.model.*;
-import ru.friends.service.VKFriendListManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.Calendar;
 
-@Controller
+//@Controller
 //@RequestMapping
+@Deprecated
 public class MainController {
-
-    private static Logger log = Logger.getLogger(MainController.class);
-
-    @Autowired
-    private FriendsDAO friendsDAO;
-    @Autowired
-    private TransactionsDAO transactionsDAO;
-    @Autowired
-    private UsersDAO usersDAO;
-    @Autowired
-    private VKFriendListManager vkFriendListManager;
 
     @RequestMapping(method = RequestMethod.GET, value = "/")
     public void begin(HttpServletResponse response) throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        //response.setContentType("text/html;charset=UTF-8");
         //response.setCharacterEncoding("UTF-8");   //Не работает
+        //log.debug("test1");
         response.getWriter().println("Трололо!<br> Трололо!<br> Я водитель нло!");
-        //friendsDAO.getById(1974730);
-        //response.getWriter().println(usersDAO.getById(1974730).getInterval().getTime());
-        //response.getWriter().println(vkFriendListManager.getFriends(usersDAO.getById(1974730)));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/friends")
     public void friends(HttpServletRequest request, HttpServletResponse response,
-                     @RequestParam int id
+                        @RequestParam int id
                      ) throws IOException {
+
+        //log.debug("test2");
         response.setContentType("text/html;charset=UTF-8");
-        response.getWriter().println(friendsDAO.getFriends(id));
+        //response.getWriter().println(friendsDAO.getAddedFriendsByUserId(id));
+        //log.debug("Trololo");
+        //response.getWriter().println(VKFriendsDAO.getResponseAsList("1974730"));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/deleted")
     public void deleted(HttpServletRequest request, HttpServletResponse response,
-                     @RequestParam int id
+                        @RequestParam int id
     ) throws IOException {
         response.setContentType("text/html;charset=UTF-8");
-        response.getWriter().println(friendsDAO.getDeletedFriends(id));
+        //response.getWriter().println(friendsDao.getDeletedFriendsByUserId(id));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/transactions")
@@ -62,7 +47,7 @@ public class MainController {
                         @RequestParam int id
     ) throws IOException {
         response.setContentType("text/html;charset=UTF-8");
-        response.getWriter().println(transactionsDAO.getTransactions(id));
+        //response.getWriter().println(transactionsDao.getTransactionsByUserId(id));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/settings")
@@ -73,31 +58,27 @@ public class MainController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/reg")
     public void reg(HttpServletRequest request, HttpServletResponse response,
-                     @RequestParam int id,
-                     @RequestParam String pass,
-                     @RequestParam int interval
+                        @RequestParam int id,
+                        @RequestParam String pass,
+                        @RequestParam int interval
     ) throws IOException {
         try {
-            //User user = new User();
-            //user.setId(id);
-            //user.setPass(pass);
-            //user.setInterval(new Timestamp(interval * 60 * 1000));
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(interval * 60 * 1000);
-            User user = new User(id, pass, calendar);
-            //user.setLastUpdate();
-            usersDAO.save(new User(id, pass, calendar));
             response.setContentType("text/html;charset=UTF-8");
-            response.getWriter().println("Пользователь успешно зарегистрирован.");
-            response.getWriter().println();
-            response.getWriter().println(user);
-            response.getWriter().println("Интервал: " + user.getInterval().getTimeInMillis());
-            response.getWriter().println();
-            response.getWriter().println(usersDAO.getById(1974730));
-            response.getWriter().println("Интервал: " + usersDAO.getById(1974730).getInterval().getTimeInMillis());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(interval * 1000);
+            //if(usersDAO.getById(id) == null) {
+                //usersDAO.save(new User(id, pass, calendar));
+                response.getWriter().println("Пользователь успешно зарегистрирован.<br>");
+            //} else
+                response.getWriter().println("Пользователь с id = " + id + " уже существует.");
         } catch (Throwable ex) {
-            log.fatal(ex);
+            //log.fatal(ex);
         }
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/start")
+    public void start(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //vkFriendListManager.init();
     }
 
 

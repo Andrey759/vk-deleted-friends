@@ -8,14 +8,14 @@
         </layout>
     </appender>
 
-<appender name="file" class="org.apache.log4j.FileAppender">
-<param name="file" value="/log/mylogfile.log" />
-<param name="append" value="false" />
-<param name="threshold" value="trace" />
-<layout class="org.apache.log4j.PatternLayout">
-<param name="ConversionPattern" value="%d{ISO8601} %-5p [%c{1}] - %m%n" />
-</layout>
-</appender>
+    <appender name="file" class="org.apache.log4j.FileAppender">
+        <param name="file" value="/log/mylogfile.log" />
+        <param name="append" value="false" />
+        <param name="threshold" value="trace" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p [%c{1}] - %m%n" />
+        </layout>
+    </appender>
 
 
 
@@ -30,7 +30,7 @@
     </logger>
 
     <logger name="ru.friends" additivity="false">
-        <level value="INFO"/>
+        <level value="DEBUG"/>
         <appender-ref ref="CONSOLE_LOG"/>
     </logger>
 
