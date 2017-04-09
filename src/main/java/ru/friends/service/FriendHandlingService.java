@@ -167,7 +167,9 @@ public class FriendHandlingService implements ApplicationContextAware {
     }
 
     private static void setIdFromSavedInDb(List<FriendData> friendsForSave, Map<Long, FriendData> savedInDbFriendsMap) {
-        friendsForSave.forEach(friend -> friend.setId(savedInDbFriendsMap.get(friend.getRemoteId()).getId()));
+        friendsForSave.stream()
+                .filter(friend -> savedInDbFriendsMap.containsKey(friend.getRemoteId()))
+                .forEach(friend -> friend.setId(savedInDbFriendsMap.get(friend.getRemoteId()).getId()));
     }
 
     private static List<FriendData> getUnion(List<FriendData> oldFriends, Map<Long, FriendData> currentFriendsMap) {

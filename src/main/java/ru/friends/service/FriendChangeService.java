@@ -21,7 +21,8 @@ public class FriendChangeService {
     @Transactional(readOnly = true)
     public List<FriendChange> findByUserId(Long userId) {
         User user = userRepository.findOne(userId);
-        return friendChangeRepository.findByUser(user);
+        //return friendChangeRepository.findByUser(user);
+        return friendChangeRepository.findAll();
     }
 
 }
