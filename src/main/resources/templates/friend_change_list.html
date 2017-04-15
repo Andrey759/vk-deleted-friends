@@ -14,7 +14,7 @@
             <tr th:each="friendChange : ${friendChanges}">
                 <td th:text="${friendChange.friendData.firstName}"></td>
                 <td th:text="${friendChange.friendData.lastName}"></td>
-                <td th:text="#{enum.ChangeType.__${friendChange.changeType}__}"></td>
+                <td th:text="#{enum.ChangeType.__${friendChange.changeType}__.__${friendChange.friendData.sexType}__}"></td>
             </tr>
         </table>
     </body>
