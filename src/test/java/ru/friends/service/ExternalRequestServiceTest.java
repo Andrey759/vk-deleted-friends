@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "dev"})
 public class ExternalRequestServiceTest {
     //private static final long TEST_ID = 16583872L;
     private static final long TEST_ID = 1974730L;
@@ -61,5 +61,4 @@ public class ExternalRequestServiceTest {
     public void updateFriendsForAllUsersTest() {
         friendHandlingService.updateFriendsForUsersWithMetrics(IntervalType.EVERY_NIGHT);
     }
-
 }

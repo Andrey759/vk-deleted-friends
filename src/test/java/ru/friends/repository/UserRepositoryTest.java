@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "dev"})
 public class UserRepositoryTest {
 
     @Autowired

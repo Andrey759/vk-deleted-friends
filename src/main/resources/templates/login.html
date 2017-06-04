@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="Изменения в списке друзей"/>
+
+        <title>Изменения в списке друзей</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <script src="https://vk.com/js/api/openapi.js?146" type="text/javascript"></script>
+        <script type="text/javascript" th:inline="javascript">
+            var vkAppId = [[${vkAppId}]];
+
+            /*<![CDATA[*/
+            $(document).ready(function() {
+
+                VK.init({
+                    apiId: vkAppId
+                });
+
+                var session;
+                VK.Auth.getSession(function(resp) {
+                    session = resp;
+                });
+
+                if (!session) {
+                    VK.Auth.login(function(resp) {
+                        if (!resp || !resp.session) {
+                            console.log('VK.Auth.login failed:');
+                            console.log(resp);
+                        }
+
+                        session = resp.session;
+                    });
+                }
+
+                if (session) {
+                    // Redirect
+                }
+
+            });
+            /*]]>*/
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <br/>
+            <br/>
+            <span>Если Вы видите эту страницу, то пожалуйста свяжитесь с <a href="mailto:andrey759@list.ru">администратором</a></span>
+        </div>
+    </body>
+</html>

@@ -1,5 +1,6 @@
 package ru.friends.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import ru.friends.service.FriendChangeService;
 import java.util.List;
 
 @Controller
+@Slf4j
 public class FriendChangeController {
 
     @Autowired

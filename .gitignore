@@ -3,3 +3,7 @@ out/
 target/
 web/
 *.iml
+MANIFEST.MF
+keystore.p12
+application-dev.properties
+application-prod.properties
