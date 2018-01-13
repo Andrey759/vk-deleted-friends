@@ -4,6 +4,8 @@ import com.google.common.base.Throwables;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,8 +32,13 @@ public abstract class AbstractConverter<DTO, VO> {
         }
     }
 
-    public List<VO> toVo(Collection<DTO> dtoCollection) {
-        return dtoCollection.stream().map(this::toVo).collect(Collectors.toList());
+    public Page<VO> toVo(Page<DTO> dtoPage) {
+        List<VO> voList = toVo(dtoPage.getContent());
+        return new PageImpl<>(voList, null, dtoPage.getTotalElements());
+    }
+
+    public List<VO> toVo(Collection<DTO> dtoList) {
+        return dtoList.stream().map(this::toVo).collect(Collectors.toList());
     }
 
     public VO toVo(DTO dto) {

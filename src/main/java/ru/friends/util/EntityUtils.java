@@ -37,6 +37,7 @@ public abstract class EntityUtils {
     public static List<FriendChange> getRightAndMap(
             Map<Long, FriendData> left, Map<Long, FriendData> right, Function<FriendData, FriendChange> mapper) {
         return right.values().stream()
+                .filter(friendData -> !friendData.isRemoved())
                 .filter(friendData -> !isFriendExist(friendData, left))
                 .map(mapper)
                 .collect(Collectors.toList());
@@ -46,9 +47,10 @@ public abstract class EntityUtils {
         return map.containsKey(friendData.getRemoteId()) && !map.get(friendData.getRemoteId()).isRemoved();
     }
 
-    public static List<Long> getIntersectionRemoteIds(Map<Long, FriendData> left, Map<Long, FriendData> right) {
+    public static List<Long> getIntersectionRemoteIdsIfNotRemoved(Map<Long, FriendData> left, Map<Long, FriendData> right) {
         return left.keySet().stream()
                 .filter(right::containsKey)
+                .filter(remoteId -> !right.get(remoteId).isRemoved())
                 .collect(Collectors.toList());
     }
 

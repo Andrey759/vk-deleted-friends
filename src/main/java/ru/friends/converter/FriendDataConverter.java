@@ -25,45 +25,46 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
         super(FriendData.class, FriendDataVo.class);
     }
 
-    public List<FriendData> toDtoFromRemoteUserData(Collection<RemoteUserData> RemoteUserDataCollection) {
-        return RemoteUserDataCollection.stream().map(this::toDtoFromRemoteUserData).collect(Collectors.toList());
+    public List<FriendData> toDtoFromRemoteUserData(Collection<RemoteUserData> remoteUserDataCollection) {
+        return remoteUserDataCollection.stream().map(this::toDtoFromRemoteUserData).collect(Collectors.toList());
     }
 
-    public FriendData toDtoFromRemoteUserData(RemoteUserData RemoteUserData) {
+    public FriendData toDtoFromRemoteUserData(RemoteUserData remoteUserData) {
         try {
             FriendData FriendData = dtoClass.newInstance();
-            fillFriendDataColumns(RemoteUserData, FriendData);
+            fillFriendDataColumns(remoteUserData, FriendData);
+
             return FriendData;
         } catch (InstantiationException | IllegalAccessException e) {
             throw Throwables.propagate(e);
         }
     }
 
-    private void fillFriendDataColumns(RemoteUserData RemoteUserData, FriendData friendData) {
-        BeanUtils.copyProperties(RemoteUserData, friendData);
+    private void fillFriendDataColumns(RemoteUserData remoteUserData, FriendData friendData) {
+        BeanUtils.copyProperties(remoteUserData, friendData);
 
         Arrays.asList(
                 FriendData.class.getDeclaredFields()
         ).stream().filter(field -> Enum.class.isAssignableFrom(field.getType())).forEach(field -> {
-            fillEnumField(field, RemoteUserData, friendData);
+            fillEnumField(field, remoteUserData, friendData);
         });
 
-        friendData.setRemoteId(RemoteUserData.getUid());
+        friendData.setRemoteId(remoteUserData.getUid());
         friendData.setLastUpdate(Instant.now());
         friendData.setRemoved(false);
-        friendData.setPhoto50(RemoteUserData.getPhoto_50());
-        if (RemoteUserData.getRelationPartner() != null) {
+        friendData.setPhoto50(remoteUserData.getPhoto_50());
+        if (remoteUserData.getRelationPartner() != null) {
             friendData.setRelationPartnerData(
-                    relationPartnerDataConverter.toDtoFromRemoteUserData(RemoteUserData.getRelationPartner())
+                    relationPartnerDataConverter.toDtoFromRemoteUserData(remoteUserData.getRelationPartner())
             );
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static void fillEnumField(Field fieldTo, RemoteUserData RemoteUserData, FriendData FriendData) {
+    private static void fillEnumField(Field fieldTo, RemoteUserData remoteUserData, FriendData FriendData) {
         try {
-            String RemoteUserDataFieldName = fieldTo.getName().replace("Type", "");
-            Field fieldFrom = RemoteUserData.class.getDeclaredField(RemoteUserDataFieldName);
+            String remoteUserDataFieldName = fieldTo.getName().replace("Type", "");
+            Field fieldFrom = RemoteUserData.class.getDeclaredField(remoteUserDataFieldName);
 
             fieldFrom.setAccessible(true);
             fieldTo.setAccessible(true);
@@ -73,16 +74,26 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
 
             Enum enumValue = null;
             if (int.class.equals(sourceClass)) {
-                enumValue = EnumConverter.getByNumber(fieldFrom.getInt(RemoteUserData), enumClass);
-            } else if (Integer.class.equals(sourceClass) && fieldFrom.get(RemoteUserData) != null) {
-                enumValue = EnumConverter.getByNumber((Integer) fieldFrom.get(RemoteUserData), enumClass);
+                enumValue = EnumConverter.getByNumber(fieldFrom.getInt(remoteUserData), enumClass);
+            } else if (Integer.class.equals(sourceClass) && fieldFrom.get(remoteUserData) != null) {
+                enumValue = EnumConverter.getByNumber((Integer) fieldFrom.get(remoteUserData), enumClass);
             } else if (String.class.equals(sourceClass)) {
-                enumValue = EnumConverter.getByName((String) fieldFrom.get(RemoteUserData), enumClass);
+                enumValue = EnumConverter.getByName((String) fieldFrom.get(remoteUserData), enumClass);
             }
             fieldTo.set(FriendData, enumValue);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    @Override
+    public FriendDataVo toVo(FriendData friendData) {
+        FriendDataVo friendDataVo = super.toVo(friendData);
+
+        friendDataVo.setFirstAndLastName(String.format("%s %s", friendData.getFirstName(), friendData.getLastName()));
+        friendDataVo.setUrl(String.format("https://vk.com/%s", friendData.getDomain()));
+
+        return friendDataVo;
     }
 
 }

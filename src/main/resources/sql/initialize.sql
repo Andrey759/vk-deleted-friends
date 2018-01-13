@@ -2,7 +2,6 @@
 CREATE TABLE "user"
 (
     id BIGINT PRIMARY KEY,
-    pass_hash VARCHAR(32) NOT NULL,
     interval_type VARCHAR(50) NOT NULL,
     last_update TIMESTAMP
 );
@@ -23,7 +22,7 @@ CREATE TABLE abstract_data
     domain VARCHAR(256),
     photo50 VARCHAR(256),
     relation_type VARCHAR(50),
-    relation_partner_data_id BIGINT REFERENCES abstract_data(id),
+    relation_partner_data_id BIGINT REFERENCES abstract_data(id) ON DELETE CASCADE,
     UNIQUE (user_id, remote_id)
 );
 
@@ -31,7 +30,7 @@ CREATE TABLE friend_change
 (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL REFERENCES "user"(id),
-    friend_data_id BIGINT NOT NULL REFERENCES abstract_data(id),
+    friend_data_id BIGINT NOT NULL REFERENCES abstract_data(id) ON DELETE CASCADE,
     detect_time_min TIMESTAMP NOT NULL,
     detect_time_max TIMESTAMP NOT NULL,
     change_type VARCHAR(50) NOT NULL
@@ -40,7 +39,7 @@ CREATE TABLE friend_change
 CREATE TABLE data_change
 (
     id BIGSERIAL PRIMARY KEY,
-    data_id BIGINT NOT NULL REFERENCES abstract_data(id),
+    data_id BIGINT NOT NULL REFERENCES abstract_data(id) ON DELETE CASCADE,
     detect_time_min TIMESTAMP NOT NULL,
     detect_time_max TIMESTAMP NOT NULL,
     field_name VARCHAR(50),
@@ -48,4 +47,4 @@ CREATE TABLE data_change
     new_value VARCHAR(256)
 );
 
-INSERT INTO "user" VALUES(1974730, '', 'EVERY_NIGHT');
+INSERT INTO "user" VALUES(1974730, 'EVERY_MINUTE', null);

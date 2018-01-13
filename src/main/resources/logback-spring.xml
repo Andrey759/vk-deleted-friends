@@ -1,0 +1,67 @@
+<configuration>
+    <property resource="application.properties" />
+    <property resource="application-dev.properties" />
+    <property resource="application-prod.properties" />
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+
+        <encoder>
+            <pattern>%d{HH:mm:ss} | %-5level | %msg%n</pattern>
+        </encoder>
+
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <prudent>true</prudent>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.files.path}/%d{MM.yyyy}/%d{dd.MM.yyyy}.log</fileNamePattern>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>1GB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder>
+            <pattern>%d{HH:mm:ss} | %-5level | %msg%n</pattern>
+        </encoder>
+
+    </appender>
+
+    <appender name="error-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <prudent>true</prudent>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.files.path}/%d{MM.yyyy}/%d{dd.MM.yyyy}.error.log</fileNamePattern>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>1GB</maxFileSize>
+        </triggeringPolicy>
+
+        <encoder>
+            <pattern>%d{HH:mm:ss} | %-5level | %msg%n</pattern>
+        </encoder>
+
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="console" />
+
+        <if condition='${log.files.enabled}'>
+            <then>
+                <appender-ref ref="file" />
+                <appender-ref ref="error-file" />
+            </then>
+        </if>
+    </root>
+
+</configuration>

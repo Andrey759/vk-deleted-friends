@@ -8,20 +8,43 @@
         <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
         <meta name="description" content="Изменения в списке друзей"/>
 
-        <title>Изменения в списке друзей</title>
+        <title>Что изменилось у друзей</title>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
+        <link rel="stylesheet" th:href="@{/css/menu.css}"/>
+        <link rel="stylesheet" th:href="@{/css/table.css}"/>
+        <link rel="stylesheet" th:href="@{/css/pagination.css}"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script th:src="@{/js/tooltip.init.js}"></script>
+        <script th:src="@{/js/data-change.search.js}"></script>
     </head>
     <body>
-        <table>
-            <tr th:each="friendChange : ${friendChanges}">
-                <td th:text="${friendChange.friendData.firstName}"></td>
-                <td th:text="${friendChange.friendData.lastName}"></td>
-                <td th:text="#{enum.ChangeType.__${friendChange.changeType}__.__${friendChange.friendData.sexType}__}"></td>
-            </tr>
-        </table>
+        <div class="container-fluid">
+            <th:block th:replace="fragments :: menu('friend-change-list')">...</th:block>
+            <div class="col-sm-12">
+                <table class="table table-striped vertical-middle">
+                    <tr class="row">
+                        <th></th>
+                        <th>Фамилия и имя</th>
+                        <th></th>
+                        <th>Прмежуток события&nbsp;&nbsp;<a href="#" data-toggle="tooltip" data-placement="right" title="Проверка списка друзей происходит раз в определённый промежуток времени. Само добавление или удаление происходит где-то между этими проверками списка. В этом столбце указан диапазон времени между ближайшими проверками, в который произошло событие."><span class="glyphicon glyphicon-question-sign"></span></a></th>
+                        <th colspan="2" th:text="#{enum.ChangeType.ADDED} + ' / ' + #{enum.ChangeType.REMOVED}">...</th>
+                    </tr>
+                    <tr class="row" th:each="friendChange : ${resultList}">
+                        <td class="padding0 width50"><a th:href="${friendChange.friendData.url}" target="_blank"><img th:src="${friendChange.friendData.photo50}"/></a></td>
+                        <td><a th:href="${friendChange.friendData.url}" target="_blank" th:text="${friendChange.friendData.firstAndLastName}">...</a></td>
+                        <td><a th:href="@{'/data-change-list?friend_remote_id=' + ${friendChange.friendData.remoteId}}">Что нового?</a></td>
+                        <td th:text="${#dates.format(friendChange.detectTimeMin, 'dd.MM.yyyy HH:mm')} + ' - ' + ${#dates.format(friendChange.detectTimeMax, 'dd.MM.yyyy HH:mm')}">...</td>
+                        <td class="width50"></td>
+                        <td class="width100">
+                            <a th:classappend="${friendChange.changeType == T(ru.friends.model.domain.ChangeType).ADDED ? 'text-success' : 'text-danger'}"
+                               th:text="#{enum.ChangeType.__${friendChange.changeType}__}" th:href="@{?change_type=__${friendChange.changeType.name()}__}">...</a>
+                        </td>
+                    </tr>
+                </table>
+                <th:block th:replace="fragments :: pagination('friend-change-list?' + ${#httpServletRequest.getParameter('change_type') == null ? '' : 'change_type=' + #httpServletRequest.getParameter('change_type') + '&amp;'}, ${totalPages})">...</th:block>
+            </div>
+        </div>
     </body>
 </html>

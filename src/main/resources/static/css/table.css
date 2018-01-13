@@ -1,0 +1,20 @@
+
+.table-striped {
+    border: 0;
+}
+
+.padding0 {
+    padding: 0 !important;
+}
+
+.vertical-middle td {
+    vertical-align: middle !important;
+}
+
+.width50 {
+    width: 50px;
+}
+
+.width100 {
+    width: 100px;
+}

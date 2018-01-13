@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="Изменения в списке друзей"/>
+
+        <title>Что изменилось у друзей</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <link rel="stylesheet" th:href="@{/css/menu.css}"/>
+        <link rel="stylesheet" th:href="@{/css/table.css}"/>
+        <link rel="stylesheet" th:href="@{/css/pagination.css}"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script th:src="@{/js/tooltip.init.js}"></script>
+        <script th:src="@{/js/data-change.search.js}"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <th:block th:replace="fragments :: menu('data-change-list')">...</th:block>
+            <div class="col-sm-12">
+                <table class="table table-striped vertical-middle">
+                    <tr class="row">
+                        <th></th>
+                        <th>Фамилия и имя</th>
+                        <th>Прмежуток события&nbsp;&nbsp;<a href="#" data-toggle="tooltip" data-placement="right" title="Проверка данных происходит раз в определённый промежуток времени. Само изменение происходит где-то между этими проверками. В этом столбце указан диапазон времени между ближайшими проверками, в который произошло событие."><span class="glyphicon glyphicon-question-sign"></span></a></th>
+                        <th>Что изменилось</th>
+                        <th>Старое значение</th>
+                        <th>Новое значение</th>
+                    </tr>
+                    <tr class="row" th:each="dataChange : ${resultList}">
+                        <td class="padding0 width50"><a th:href="${dataChange.friendData.url}" target="_blank"><img th:src="${dataChange.friendData.photo50}"/></a></td>
+                        <td><a th:href="${dataChange.friendData.url}" target="_blank" th:text="${dataChange.friendData.firstAndLastName}">...</a></td>
+                        <td th:text="${#dates.format(dataChange.detectTimeMin, 'dd.MM.yyyy HH:mm')} + ' - ' + ${#dates.format(dataChange.detectTimeMax, 'dd.MM.yyyy HH:mm')}">...</td>
+                        <td th:text="#{FieldName.__${dataChange.fieldName}__}">...</td>
+                        <td th:classappend="${dataChange.fieldName == 'photo50' ? 'padding0' : ''}">
+                            <img th:if="${dataChange.fieldName == 'photo50'}" th:src="${dataChange.oldValue}"/>
+                            <th:block th:unless="${dataChange.fieldName == 'photo50'}" th:text="${dataChange.oldValue}"></th:block>
+                        </td>
+                        <td th:classappend="${dataChange.fieldName == 'photo50' ? 'padding0' : ''}">
+                            <img th:if="${dataChange.fieldName == 'photo50'}" th:src="${dataChange.newValue}"/>
+                            <th:block th:unless="${dataChange.fieldName == 'photo50'}" th:text="${dataChange.newValue}"></th:block>
+                        </td>
+                    </tr>
+                </table>
+                <th:block th:replace="fragments :: pagination('data-change-list?' + ${#httpServletRequest.getParameter('friend_remote_id') == null ? '' : 'friend_remote_id=' + #httpServletRequest.getParameter('friend_remote_id') + '&amp;'}, ${totalPages})">...</th:block>
+            </div>
+        </div>
+    </body>
+</html>

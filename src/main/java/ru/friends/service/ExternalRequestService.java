@@ -28,7 +28,7 @@ public class ExternalRequestService {
     private static final String VK_API_GET_FRIENDS_SHORT = "https://api.vk.com/method/friends.get?user_id=%d&fields=" +
             "nickname,domain,sex,photo_50,relation";
 
-    private static final ObjectReader reader = new ObjectMapper()
+    private static final ObjectReader READER = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
             .readerFor(ResponseHolder.class);
@@ -41,7 +41,7 @@ public class ExternalRequestService {
             URL url = new URL(String.format(VK_API_GET_FRIENDS_SHORT, id));
             URLConnection connection = url.openConnection();
             String response = IOUtils.toString(connection.getInputStream(), "UTF-8");
-            ResponseHolder responseDto = reader.readValue(response);
+            ResponseHolder responseDto = READER.readValue(response);
             List<RemoteUserData> remoteUsers = responseDto.getResponse();
             return userDataConverter.toDtoFromRemoteUserData(remoteUsers);
         } catch (IOException e) {

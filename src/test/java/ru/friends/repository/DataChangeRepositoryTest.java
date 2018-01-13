@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-@ActiveProfiles({"test", "dev"})
+@ActiveProfiles({"test", "dev", "prod"})
 public class DataChangeRepositoryTest {
 
     @Autowired

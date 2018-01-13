@@ -21,19 +21,12 @@ public class User {
     @Id
     Long id;
 
-    @Column(nullable = false, length = 32)
-    String passHash;
-
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     IntervalType intervalType;
 
     @Column
     Instant lastUpdate;
-
-    //@OneToOne(cascade = CascadeType.MERGE)
-    //@PrimaryKeyJoinColumn
-    //UserData userData;
 
     @OneToMany(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")

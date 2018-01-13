@@ -11,10 +11,18 @@ import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
-@EqualsAndHashCode(exclude = {"relationPartnerData"}, callSuper = true)
-@ToString(exclude = {"relationPartnerData"}, callSuper = true)
+@EqualsAndHashCode(exclude = {FriendData.RELATION_PARTNER_DATA}, callSuper = true)
+@ToString(exclude = {FriendData.RELATION_PARTNER_DATA}, callSuper = true)
 @Data
 public class FriendData extends AbstractData {
+
+    public static final String LAST_UPDATE = "lastUpdate";
+    public static final String REMOVED = "removed";
+    public static final String SEX_TYPE = "sexType";
+    public static final String DEACTIVATED_TYPE = "deactivatedType";
+    public static final String RELATION_TYPE = "relationType";
+    public static final String PHOTO_50 = "photo50";
+    public static final String RELATION_PARTNER_DATA = "relationPartnerData";
 
     @Column
     Instant lastUpdate;

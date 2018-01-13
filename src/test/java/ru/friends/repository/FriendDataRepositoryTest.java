@@ -11,15 +11,15 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-@ActiveProfiles({"test", "dev"})
-public class UserDataRepositoryTest {
+@ActiveProfiles({"test", "dev", "prod"})
+public class FriendDataRepositoryTest {
 
     @Autowired
-    UserDataRepository userDataRepository;
+    FriendDataRepository friendDataRepository;
 
     @Test
     public void contextText() {
-        assertNotNull(userDataRepository);
+        assertNotNull(friendDataRepository);
     }
 
 }

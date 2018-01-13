@@ -22,22 +22,21 @@ import ru.friends.model.dto.DataChange;
 import ru.friends.model.dto.FriendChange;
 import ru.friends.model.dto.User;
 import ru.friends.model.dto.data.FriendData;
+import ru.friends.model.dto.data.RelationPartnerData;
 import ru.friends.model.dto.data.UserData;
 import ru.friends.repository.DataChangeRepository;
 import ru.friends.repository.FriendChangeRepository;
-import ru.friends.repository.UserDataRepository;
 import ru.friends.repository.UserRepository;
 import ru.friends.util.EntityUtils;
 import ru.friends.util.FutureUtils;
 import ru.friends.util.StopWatchUtils;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,8 +45,6 @@ public class FriendHandlingService implements ApplicationContextAware {
 
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    UserDataRepository userDataRepository;
     @Autowired
     FriendChangeRepository friendChangeRepository;
     @Autowired
@@ -63,39 +60,6 @@ public class FriendHandlingService implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.self = applicationContext.getBean(FriendHandlingService.class);
-    }
-
-    @Transactional
-    public void initFriendListForNewUser(long userId) {
-        User user = userRepository.getOne(userId);
-        List<FriendData> userFriends = externalRequestService.loadFriendsById(user.getId());
-        user.setFriends(userFriends);
-        user.setLastUpdate(Instant.now());
-        userRepository.save(user);
-    }
-
-    @Transactional  // TODO: remove
-    public void generateUsersAndLoadFriendsForEach() {
-        StopWatch totalMetrics = new StopWatch();
-        totalMetrics.start("totalTimer");
-        List<User> users = userRepository.findAll();
-        users.forEach(user -> {
-            List<FriendData> friends = user.getFriends();
-            friends.forEach(friend -> {
-                User newUser = new User();
-                newUser.setId(friend.getRemoteId());
-                newUser.setPassHash("");
-                newUser.setIntervalType(IntervalType.EVERY_NIGHT);
-                newUser = userRepository.save(newUser);
-                StopWatch initFriendsMetrics = new StopWatch();
-                initFriendsMetrics.start("initFriendListForNewUser");
-                initFriendListForNewUser(newUser.getId());
-                initFriendsMetrics.stop();
-                log.info(initFriendsMetrics.prettyPrint());
-            });
-        });
-        totalMetrics.stop();
-        log.info(totalMetrics.prettyPrint());
     }
 
     public void updateFriendsForUsersWithMetrics(IntervalType intervalType) {
@@ -122,7 +86,11 @@ public class FriendHandlingService implements ApplicationContextAware {
     @Transactional
     public void updateFriendsForUser(long userId) {
         User user = userRepository.getOne(userId);
-        List<FriendData> oldFriends = EntityUtils.copy(user.getFriends());
+        updateFriendsForUser(user);
+    }
+
+    public void updateFriendsForUser(User user) {
+        List<FriendData> oldFriends = EntityUtils.copy(Optional.ofNullable(user.getFriends()).orElse(Collections.emptyList()));
         List<FriendData> currentFriends = externalRequestService.loadFriendsById(user.getId());
 
         Map<Long, FriendData> oldFriendsMap = EntityUtils.groupByRemoteId(oldFriends);
@@ -131,34 +99,35 @@ public class FriendHandlingService implements ApplicationContextAware {
         List<FriendData> friendsForSave = getUnion(oldFriends, currentFriendsMap);
         setRemovedIfNotContainsInCurrentFriends(friendsForSave, currentFriendsMap);
         setIdFromSavedInDb(friendsForSave, oldFriendsMap);
+        setRelationPartnerIdFromSavedInDb(friendsForSave, oldFriendsMap);
+        setNullRelationPartnerIdIfNameChanged(friendsForSave, oldFriendsMap);
         user.setFriends(friendsForSave);
         Instant lastUpdate = user.getLastUpdate();
         user.setLastUpdate(Instant.now());
 
         final User savedUser = userRepository.save(user);
-        Map<Long, FriendData> savedInDbFriendsMap = EntityUtils.groupByRemoteId(friendsForSave);
+        Map<Long, FriendData> savedInDbCurrentFriendsMap = EntityUtils.groupByRemoteId(EntityUtils.copy(friendsForSave));
+        if (lastUpdate == null)
+            return;
 
         Function<FriendData, FriendChange> addedMapper =
                 friendData -> toFriendChange(friendData, ChangeType.ADDED, savedUser, lastUpdate);
-        List<FriendChange> addedFriends = EntityUtils.getRightAndMap(oldFriendsMap, currentFriendsMap, addedMapper);
-        EntityUtils.updateFriendChangeFromSavedInDb(addedFriends, savedInDbFriendsMap);
+        List<FriendChange> addedFriends = EntityUtils.getRightAndMap(oldFriendsMap, savedInDbCurrentFriendsMap, addedMapper);
         friendChangeRepository.save(addedFriends);
 
         Function<FriendData, FriendChange> removedMapper =
                 friendData -> toFriendChange(friendData, ChangeType.REMOVED, savedUser, lastUpdate);
-        List<FriendChange> removedFriends = EntityUtils.getLeftAndMap(oldFriendsMap, currentFriendsMap, removedMapper);
-        EntityUtils.updateFriendChangeFromSavedInDb(removedFriends, savedInDbFriendsMap);
+        List<FriendChange> removedFriends = EntityUtils.getLeftAndMap(oldFriendsMap, savedInDbCurrentFriendsMap, removedMapper);
         friendChangeRepository.save(removedFriends);
 
 
-        List<Long> remainingFriendIds = EntityUtils.getIntersectionRemoteIds(oldFriendsMap, currentFriendsMap);
+        List<Long> remainingFriendIds = EntityUtils.getIntersectionRemoteIdsIfNotRemoved(oldFriendsMap, savedInDbCurrentFriendsMap);
         List<DataChange> friendDataChanges = remainingFriendIds.stream()
                 .map(remoteId -> toFriendDataChanges(
-                        oldFriendsMap.get(remoteId), currentFriendsMap.get(remoteId)))
+                        oldFriendsMap.get(remoteId), savedInDbCurrentFriendsMap.get(remoteId)))
                 .filter(changeList -> !Iterables.isEmpty(changeList))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        EntityUtils.updateDataChangeFromSavedInDb(friendDataChanges, savedInDbFriendsMap);
         dataChangeRepository.save(friendDataChanges);
     }
 
@@ -170,6 +139,31 @@ public class FriendHandlingService implements ApplicationContextAware {
         friendsForSave.stream()
                 .filter(friend -> savedInDbFriendsMap.containsKey(friend.getRemoteId()))
                 .forEach(friend -> friend.setId(savedInDbFriendsMap.get(friend.getRemoteId()).getId()));
+    }
+
+    private static void setRelationPartnerIdFromSavedInDb(List<FriendData> friendsForSave, Map<Long, FriendData> savedInDbFriendsMap) {
+        friendsForSave.stream()
+                .filter(friend -> friend.getRelationPartnerData() != null)
+                .filter(friend -> friend.getRelationPartnerData().getId() == null)
+                .filter(friend -> savedInDbFriendsMap.containsKey(friend.getRemoteId()))
+                .filter(friend -> savedInDbFriendsMap.get(friend.getRemoteId()).getRelationPartnerData() != null)
+                .forEach(friend -> friend.getRelationPartnerData().setId(
+                        savedInDbFriendsMap.get(friend.getRemoteId()).getRelationPartnerData().getId()
+                ));
+    }
+
+    private static void setNullRelationPartnerIdIfNameChanged(List<FriendData> friendsForSave, Map<Long, FriendData> savedInDbFriendsMap) {
+        friendsForSave.stream()
+                .filter(friend -> friend.getRelationPartnerData() != null)
+                .filter(friend -> friend.getRelationPartnerData().getId() != null)
+                .filter(friend -> {
+                    FriendData savedFriend = savedInDbFriendsMap.get(friend.getRemoteId());
+                    RelationPartnerData partner = friend.getRelationPartnerData();
+                    RelationPartnerData savedPartner = savedFriend.getRelationPartnerData();
+                    return !Objects.equals(partner.getFirstName(), savedPartner.getFirstName())
+                            || !Objects.equals(partner.getLastName(), savedPartner.getLastName());
+                })
+                .forEach(friend -> friend.getRelationPartnerData().setId(null));
     }
 
     private static List<FriendData> getUnion(List<FriendData> oldFriends, Map<Long, FriendData> currentFriendsMap) {
@@ -194,17 +188,18 @@ public class FriendHandlingService implements ApplicationContextAware {
 
     private static List<DataChange> toFriendDataChanges(FriendData oldData, FriendData newData) {
 
-        if (oldData.getDeactivatedType() != newData.getDeactivatedType()) {
-            return Collections.singletonList(toDeactivatedTypeDataChange(oldData, newData));
-        }
+        List<DataChange> friendDataChanges = Lists.newArrayList();
 
-        // TODO: fix for relationPartner change name or surname
+        if (oldData.getDeactivatedType() != newData.getDeactivatedType()) {
+            friendDataChanges.add(toDeactivatedTypeDataChange(oldData, newData));
+        }
 
         if (!EntityUtils.isEqualsById(oldData.getRelationPartnerData(), newData.getRelationPartnerData())) {
-            return Collections.singletonList(toRelationPartnerDataChange(oldData, newData));
+            friendDataChanges.add(toRelationPartnerDataChange(oldData, newData));
         }
 
-        return compareAndReturnChanges(oldData, newData);
+        friendDataChanges.addAll(compareAndReturnChanges(oldData, newData));
+        return friendDataChanges;
     }
 
     private static DataChange toDeactivatedTypeDataChange(FriendData oldData, FriendData newData) {
@@ -212,7 +207,7 @@ public class FriendHandlingService implements ApplicationContextAware {
         dataChange.setData(newData);
         dataChange.setDetectTimeMin(oldData.getLastUpdate());
         dataChange.setDetectTimeMax(newData.getLastUpdate());
-        dataChange.setFieldName("deactivatedType");
+        dataChange.setFieldName(FriendData.DEACTIVATED_TYPE);
         dataChange.setOldValue(
                 oldData.getDeactivatedType() != null ? oldData.getDeactivatedType().name() : null);
         dataChange.setNewValue(
@@ -225,7 +220,7 @@ public class FriendHandlingService implements ApplicationContextAware {
         dataChange.setData(newData);
         dataChange.setDetectTimeMin(oldData.getLastUpdate());
         dataChange.setDetectTimeMax(newData.getLastUpdate());
-        dataChange.setFieldName("relationPartner");
+        dataChange.setFieldName(FriendData.RELATION_PARTNER_DATA);
         dataChange.setOldValue(
                 oldData.getRelationPartnerData() != null ? "" + oldData.getRelationPartnerData().getId() : null);
         dataChange.setNewValue(
@@ -235,16 +230,14 @@ public class FriendHandlingService implements ApplicationContextAware {
 
     private static final Javers JAVERS = JaversBuilder.javers().registerEntity(UserData.class).build();
     private static List<DataChange> compareAndReturnChanges(FriendData oldData, FriendData newData) {
-        newData.setId(oldData.getId()); // TODO: need refactoring
-        if (newData.getRelationPartnerData() != null) {
-            newData.getRelationPartnerData().setId(oldData.getRelationPartnerData().getId());
-        }
         Diff diff = JAVERS.compare(oldData, newData);
         return diff.getChanges().stream()
                 .map(change -> toFriendDataChange(oldData, newData, change))
-                .filter(userDataChange -> userDataChange != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
+
+    private static final Pattern PHOTO_PATTERN = Pattern.compile("^https://[a-z0-9.]+/([A-z0-9./]+)$");
 
     private static DataChange toFriendDataChange(FriendData oldData, FriendData newData, Change change) {
         if (!(change instanceof ValueChange))
@@ -252,7 +245,17 @@ public class FriendHandlingService implements ApplicationContextAware {
 
         ValueChange valueChange = (ValueChange) change;
 
-        if ("lastUpdate".equals(valueChange.getPropertyName()) || "removed".equals(valueChange.getPropertyName()))
+        if (FriendData.LAST_UPDATE.equals(valueChange.getPropertyName())
+                || FriendData.REMOVED.equals(valueChange.getPropertyName())
+                || FriendData.RELATION_PARTNER_DATA.equals(valueChange.getPropertyName()))
+            return null;
+
+        Matcher oldPhotoMather = PHOTO_PATTERN.matcher(Optional.ofNullable(oldData.getPhoto50()).orElse(""));
+        Matcher newPhotoMather = PHOTO_PATTERN.matcher(Optional.ofNullable(newData.getPhoto50()).orElse(""));
+        if (FriendData.PHOTO_50.equals(valueChange.getPropertyName())
+                && oldPhotoMather.matches()
+                && newPhotoMather.matches()
+                && oldPhotoMather.group(1).equals(newPhotoMather.group(1)))
             return null;
 
         DataChange userDataChange = new DataChange();
