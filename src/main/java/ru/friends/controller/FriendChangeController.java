@@ -23,13 +23,9 @@ public class FriendChangeController extends AbstractController {
 
     @GetMapping("/")
     public String getIndexPage() {
-        if (!vkUserAuthKeyEnabled && vkUserDefaultId != null)
-            return "redirect:/friend-change-list?viewer_id=" + vkUserDefaultId;
-
-        return "redirect:/friend-change-list";
+        return "redirect:/friend-change-list" + (vkUserDefaultId == null ? "" : "?viewer_id=" + vkUserDefaultId);
     }
 
-    // For local testing
     @GetMapping("/friend-change-list")
     public String getFriendChangeList(
             Model model,
@@ -41,7 +37,7 @@ public class FriendChangeController extends AbstractController {
     ) throws URISyntaxException, ClientException, ApiException {
 
         return super.handle(
-                model, request, viewerId, authKey, page, null, changeType,"friend-change-list", "friend_change_list",
+                model, viewerId, authKey, null, changeType, page,"friend-change-list", "friend_change_list",
                 pageRequest -> changeType == null
                         ? friendChangeService.findByUserId(viewerId, pageRequest)
                         : friendChangeService.findByUserIdAndChangeType(viewerId, changeType, pageRequest)

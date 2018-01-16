@@ -16,12 +16,16 @@
         <link rel="stylesheet" th:href="@{/css/pagination.css}"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="text/javascript" th:inline="javascript">
+            window.contextPath = /*[[@{/}]]*/ '';
+            window.baseUrlParams = /*[[${baseUrlParams}]]*/ '';
+        </script>
         <script th:src="@{/js/tooltip.init.js}"></script>
         <script th:src="@{/js/data-change.search.js}"></script>
     </head>
     <body>
         <div class="container-fluid">
-            <th:block th:replace="fragments :: menu('friend-change-list')">...</th:block>
+            <th:block th:replace="fragments :: menu('friend-change-list', ${baseUrlParams})">...</th:block>
             <div class="col-sm-12">
                 <table class="table table-striped vertical-middle">
                     <tr class="row">
@@ -34,16 +38,16 @@
                     <tr class="row" th:each="friendChange : ${resultList}">
                         <td class="padding0 width50"><a th:href="${friendChange.friendData.url}" target="_blank"><img th:src="${friendChange.friendData.photo50}"/></a></td>
                         <td><a th:href="${friendChange.friendData.url}" target="_blank" th:text="${friendChange.friendData.firstAndLastName}">...</a></td>
-                        <td><a th:href="@{'/data-change-list?friend_remote_id=' + ${friendChange.friendData.remoteId}}">Что нового?</a></td>
-                        <td th:text="${#dates.format(friendChange.detectTimeMin, 'dd.MM.yyyy HH:mm')} + ' - ' + ${#dates.format(friendChange.detectTimeMax, 'dd.MM.yyyy HH:mm')}">...</td>
+                        <td><a th:href="@{'data-change-list?' + ${baseUrlParams} + '&amp;friend_remote_id=' + ${friendChange.friendData.remoteId}}">Что нового?</a></td>
+                        <td th:text="${#dates.format(friendChange.detectTimeMin, 'dd.MM.yyyy HH:mm')} + ' ' + ${#dates.format(friendChange.detectTimeMax, 'dd.MM.yyyy HH:mm')}">...</td>
                         <td class="width50"></td>
                         <td class="width100">
                             <a th:classappend="${friendChange.changeType == T(ru.friends.model.domain.ChangeType).ADDED ? 'text-success' : 'text-danger'}"
-                               th:text="#{enum.ChangeType.__${friendChange.changeType}__}" th:href="@{?change_type=__${friendChange.changeType.name()}__}">...</a>
+                               th:text="#{enum.ChangeType.__${friendChange.changeType}__}" th:href="@{'?' + ${baseUrlParams} + '&amp;change_type=' + ${friendChange.changeType.name()}}">...</a>
                         </td>
                     </tr>
                 </table>
-                <th:block th:replace="fragments :: pagination('friend-change-list?' + ${#httpServletRequest.getParameter('change_type') == null ? '' : 'change_type=' + #httpServletRequest.getParameter('change_type') + '&amp;'}, ${totalPages})">...</th:block>
+                <th:block th:replace="fragments :: pagination('friend-change-list?' + ${allUrlParams} + '&amp;', ${totalPages})">...</th:block>
             </div>
         </div>
     </body>

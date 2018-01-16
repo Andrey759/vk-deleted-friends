@@ -5,16 +5,16 @@
 </head>
 <body>
 
-<th:block th:fragment="menu(pageName)">
+<th:block th:fragment="menu(pageName, baseUrlParams)">
     <div class="col-sm-12">
-        <a class="btn" href="/friend-change-list" th:classappend="${pageName == 'friend-change-list' &amp;&amp; #httpServletRequest.getParameter('change_type') == null} ? 'btn-primary disabled' : 'btn-default'">
+        <a class="btn" th:href="@{'/friend-change-list?' + ${baseUrlParams}}" th:classappend="${pageName == 'friend-change-list' &amp;&amp; #httpServletRequest.getParameter('change_type') == null} ? 'btn-primary disabled' : 'btn-default'">
             Кто ушел, кто пришел
         </a>
         <a class="btn btn-primary disabled width100" href="#" th:text="'(' + #{enum.ChangeType.__${#httpServletRequest.getParameter('change_type')}__} + ')'"
            th:if="${pageName == 'friend-change-list' &amp;&amp; #httpServletRequest.getParameter('change_type') != null}">...</a>
         <a class="btn disabled width100"
            th:unless="${pageName == 'friend-change-list' &amp;&amp; #httpServletRequest.getParameter('change_type') != null}"></a>
-        <a class="btn" href="/data-change-list" th:classappend="${pageName} == 'data-change-list' ? 'btn-primary disabled' : 'btn-default'">
+        <a class="btn" th:href="@{'/data-change-list?' + ${baseUrlParams}}" th:classappend="${pageName} == 'data-change-list' ? 'btn-primary disabled' : 'btn-default'">
             Что нового у друзей
         </a>
         <input type="number" id="friend_remote_id" name="friend_remote_id" th:value="${#httpServletRequest.getParameter('friend_remote_id')}" placeholder="ID"/>
@@ -26,14 +26,14 @@
     <div th:with="page=${#httpServletRequest.getParameter('page')} == null ? 1 : ${#httpServletRequest.getParameter('page')}"
          class="col-sm-12" th:if="${__${totalPages}__ > 1}">Страница:
 
-        <a th:if="${__${page}__ &gt; 4}" th:href="@{__${pageUrl}__}">&lt;&lt;</a>
+        <a th:if="${page} &gt; 4" th:href="@{${pageUrl}}">&lt;&lt;</a>
         <th:block th:each="i : ${#numbers.sequence(1, __${totalPages}__)}">
             <th:block th:if="${T(java.lang.Math).abs(__${page}__ - __${i}__) &lt; 4}">
-                <a th:unless="${page} == ${i}" class="page-number" th:href="@{__${pageUrl}__page=__${i}__}" th:text="${i}">...</a>
+                <a th:unless="${page} == ${i}" class="page-number" th:href="@{${pageUrl} + '&amp;page=' + ${i}}" th:text="${i}">...</a>
                 <b th:if="${page} == ${i}" class="page-number" th:text="${i}">...</b>
             </th:block>
         </th:block>
-        <a th:if="${(__${totalPages}__ - __${page}__) &gt;= 4}" th:href="@{__${pageUrl}__&amp;page=__${totalPages}__}">&gt;&gt;</a>
+        <a th:if="(${totalPages} - ${page}) &gt;= 4" th:href="@{${pageUrl} + '&amp;page=' + ${totalPages}}">&gt;&gt;</a>
     </div>
 </th:block>
 

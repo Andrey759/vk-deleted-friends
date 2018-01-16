@@ -16,12 +16,16 @@
         <link rel="stylesheet" th:href="@{/css/pagination.css}"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="text/javascript" th:inline="javascript">
+            window.contextPath = /*[[@{/}]]*/ '';
+            window.baseUrlParams = /*[[${baseUrlParams}]]*/ '';
+        </script>
         <script th:src="@{/js/tooltip.init.js}"></script>
         <script th:src="@{/js/data-change.search.js}"></script>
     </head>
     <body>
         <div class="container-fluid">
-            <th:block th:replace="fragments :: menu('data-change-list')">...</th:block>
+            <th:block th:replace="fragments :: menu('data-change-list', ${baseUrlParams})">...</th:block>
             <div class="col-sm-12">
                 <table class="table table-striped vertical-middle">
                     <tr class="row">
@@ -47,7 +51,7 @@
                         </td>
                     </tr>
                 </table>
-                <th:block th:replace="fragments :: pagination('data-change-list?' + ${#httpServletRequest.getParameter('friend_remote_id') == null ? '' : 'friend_remote_id=' + #httpServletRequest.getParameter('friend_remote_id') + '&amp;'}, ${totalPages})">...</th:block>
+                <th:block th:replace="fragments :: pagination('data-change-list?' + ${allUrlParams} + '&amp;', ${totalPages})">...</th:block>
             </div>
         </div>
     </body>

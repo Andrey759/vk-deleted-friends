@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-@ActiveProfiles({"test", "dev", "prod"})
+@ActiveProfiles({"dev", "prod", "test"})
 public class FriendChangeRepositoryTest {
 
     @Autowired

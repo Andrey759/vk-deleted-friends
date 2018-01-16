@@ -20,7 +20,6 @@ public class DataChangeController extends AbstractController {
     @Autowired
     DataChangeService dataChangeService;
 
-    // For local testing
     @GetMapping("/data-change-list")
     public String getDataChangeList(
             Model model,
@@ -32,7 +31,7 @@ public class DataChangeController extends AbstractController {
     ) throws URISyntaxException, ClientException, ApiException {
 
         return super.handle(
-                model, request, viewerId, authKey, page, friendRemoteId, null,"data-change-list", "data_change_list",
+                model, viewerId, authKey, friendRemoteId, null, page, "data-change-list", "data_change_list",
                 pageRequest -> friendRemoteId == null
                         ? dataChangeService.findByUserId(viewerId, pageRequest)
                         : dataChangeService.findByFriendRemoteId(viewerId, friendRemoteId, pageRequest)
