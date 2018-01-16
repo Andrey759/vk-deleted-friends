@@ -39,7 +39,10 @@
                     <tr class="row" th:each="dataChange : ${resultList}">
                         <td class="padding0 width50"><a th:href="${dataChange.friendData.url}" target="_blank"><img th:src="${dataChange.friendData.photo50}"/></a></td>
                         <td><a th:href="${dataChange.friendData.url}" target="_blank" th:text="${dataChange.friendData.firstAndLastName}">...</a></td>
-                        <td th:text="${#dates.format(dataChange.detectTimeMin, 'dd.MM.yyyy HH:mm')} + ' - ' + ${#dates.format(dataChange.detectTimeMax, 'dd.MM.yyyy HH:mm')}">...</td>
+                        <td>
+                            <div th:text="${#dates.format(dataChange.detectTimeMin, 'dd.MM.yyyy HH:mm')}">...</div>
+                            <div th:text="${#dates.format(dataChange.detectTimeMax, 'dd.MM.yyyy HH:mm')}">...</div>
+                        </td>
                         <td th:text="#{FieldName.__${dataChange.fieldName}__}">...</td>
                         <td th:classappend="${dataChange.fieldName == 'photo50' ? 'padding0' : ''}">
                             <img th:if="${dataChange.fieldName == 'photo50'}" th:src="${dataChange.oldValue}"/>
