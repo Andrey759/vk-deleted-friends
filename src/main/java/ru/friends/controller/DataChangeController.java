@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.friends.service.DataChangeService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URISyntaxException;
 
 @Controller
@@ -23,7 +22,6 @@ public class DataChangeController extends AbstractController {
     @GetMapping("/data-change-list")
     public String getDataChangeList(
             Model model,
-            HttpServletRequest request,
             @RequestParam(name = "viewer_id", required = false) Long viewerId,
             @RequestParam(name = "auth_key", required = false) String authKey,
             @RequestParam(required = false) Integer page,

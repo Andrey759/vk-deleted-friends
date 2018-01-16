@@ -8,13 +8,11 @@ import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.users.UserXtrCounters;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.ui.Model;
 import ru.friends.model.domain.ChangeType;
-import ru.friends.service.UserService;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -26,21 +24,16 @@ public class AbstractController {
 
     private static final int ROWS_ON_PAGE = 10;
 
-    @Autowired
-    UserService userService;
-
     @Value("${vk.app.id:}")
     Integer vkAppId;
     @Value("${vk.app.protect.key:}")
     String vkAppProtectKey;
     @Value("${vk.user.auth.key.enabled:true}")
     boolean vkUserAuthKeyEnabled;
-    @Value("${vk.user.default.id:}")
-    Integer vkUserDefaultId;
 
     protected String handle(
             Model model,
-            long viewerId,
+            Long viewerId,
             String authKey,
             Long friendRemoteId,
             ChangeType changeType,
@@ -49,6 +42,9 @@ public class AbstractController {
             String pageName,
             Function<PageRequest, Page> function
     ) throws ClientException, ApiException {
+
+        if (viewerId == null)
+            throw new RuntimeException("Parameter 'view_id' required.");
 
         if (vkUserAuthKeyEnabled && authKey == null)
             throw new RuntimeException("Parameter 'auth_key' required.");
@@ -62,7 +58,6 @@ public class AbstractController {
         if (page == null)
             page = 1;
 
-        userService.checkAndCreateIfNeeded(viewerId);
         PageRequest pageRequest = new PageRequest(page - 1, ROWS_ON_PAGE);
         Page resultPage = function.apply(pageRequest);
         model.addAttribute("resultList", resultPage.getContent());
@@ -79,7 +74,7 @@ public class AbstractController {
         return pageName;
     }
 
-    private String getBaseUrlParams(long viewerId, String authKey) {
+    protected String getBaseUrlParams(long viewerId, String authKey) {
         StringBuilder builder = new StringBuilder().append("viewer_id=").append(viewerId);
 
         if (authKey != null)
@@ -88,8 +83,8 @@ public class AbstractController {
         return builder.toString();
     }
 
-    private String getAllUrlParams(Long viewerId, String authKey, Long friendRemoteId, ChangeType changeType) {
-        StringBuilder builder = new StringBuilder().append("viewer_id=").append(viewerId);
+    protected String getAllUrlParams(long viewerId, String authKey, Long friendRemoteId, ChangeType changeType) {
+        StringBuilder builder = new StringBuilder().append(viewerId);
 
         if (authKey != null)
             builder.append("&auth_key=").append(authKey);
