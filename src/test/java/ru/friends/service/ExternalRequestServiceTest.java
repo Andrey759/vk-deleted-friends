@@ -15,7 +15,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-@ActiveProfiles({"dev", "prod", "test"})
+@ActiveProfiles("test")
 public class ExternalRequestServiceTest {
     private static final long TEST_ID = 1L;
 
