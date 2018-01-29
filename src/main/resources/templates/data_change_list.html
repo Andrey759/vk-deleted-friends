@@ -43,7 +43,7 @@
                     <tr class="row" th:each="dataChange : ${resultList}">
                         <td class="padding0 width50"><a th:href="${dataChange.friendData.url}" target="_blank"><img th:src="${dataChange.friendData.photo50}"/></a></td>
                         <td><a th:href="${dataChange.friendData.url}" target="_blank" th:text="${dataChange.friendData.firstAndLastName}">...</a></td>
-                        <td>
+                        <td class="width130">
                             <div th:text="${#dates.format(dataChange.detectTimeMin, 'dd.MM.yyyy HH:mm')}">...</div>
                             <div th:text="${#dates.format(dataChange.detectTimeMax, 'dd.MM.yyyy HH:mm')}">...</div>
                         </td>

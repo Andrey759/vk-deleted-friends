@@ -43,7 +43,7 @@
                         <td class="padding0 width50"><a th:href="${friendChange.friendData.url}" target="_blank"><img th:src="${friendChange.friendData.photo50}"/></a></td>
                         <td><a th:href="${friendChange.friendData.url}" target="_blank" th:text="${friendChange.friendData.firstAndLastName}">...</a></td>
                         <td><a th:href="@{'data-change-list?' + ${baseUrlParams} + '&amp;friend_remote_id=' + ${friendChange.friendData.remoteId}}">Что нового?</a></td>
-                        <td>
+                        <td class="width130">
                             <div th:text="${#dates.format(friendChange.detectTimeMin, 'dd.MM.yyyy HH:mm')}">...</div>
                             <div th:text="${#dates.format(friendChange.detectTimeMax, 'dd.MM.yyyy HH:mm')}">...</div>
                         </td>
