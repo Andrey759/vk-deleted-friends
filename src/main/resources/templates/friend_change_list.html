@@ -11,9 +11,10 @@
         <title>Что изменилось у друзей</title>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <link rel="stylesheet" th:href="@{/css/container.css}"/>
         <link rel="stylesheet" th:href="@{/css/menu.css}"/>
-        <link rel="stylesheet" th:href="@{/css/table.css}"/>
         <link rel="stylesheet" th:href="@{/css/pagination.css}"/>
+        <link rel="stylesheet" th:href="@{/css/table.css}"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script type="text/javascript" th:inline="javascript">
@@ -24,7 +25,7 @@
         <script th:src="@{/js/data-change.search.js}"></script>
     </head>
     <body>
-        <div class="container-fluid">
+        <div class="container-fluid app-container">
             <th:block th:replace="fragments :: menu('friend-change-list', ${baseUrlParams})">...</th:block>
             <div class="col-sm-12">
                 <table class="table table-striped vertical-middle">
@@ -32,8 +33,11 @@
                         <th></th>
                         <th>Фамилия и имя</th>
                         <th></th>
-                        <th>Прмежуток события&nbsp;&nbsp;<a href="#" data-toggle="tooltip" data-placement="right" title="Проверка списка друзей происходит раз в определённый промежуток времени. Само добавление или удаление происходит где-то между этими проверками списка. В этом столбце указан диапазон времени между ближайшими проверками, в который произошло событие."><span class="glyphicon glyphicon-question-sign"></span></a></th>
+                        <th>Промежуток&nbsp;&nbsp;<a href="#" data-toggle="tooltip" data-placement="right" title="Проверка списка друзей происходит раз в определённый промежуток времени. Само добавление или удаление происходит где-то между этими проверками списка. В этом столбце указан диапазон времени между ближайшими проверками, в который произошло событие."><span class="glyphicon glyphicon-question-sign"></span></a></th>
                         <th colspan="2" th:text="#{enum.ChangeType.ADDED} + ' / ' + #{enum.ChangeType.REMOVED}">...</th>
+                    </tr>
+                    <tr class="row" th:if="${resultList.isEmpty()}">
+                        <td colspan="6" class="text-center bg-info">На текущей момент нету ни одной записи, чтобы показать</td>
                     </tr>
                     <tr class="row" th:each="friendChange : ${resultList}">
                         <td class="padding0 width50"><a th:href="${friendChange.friendData.url}" target="_blank"><img th:src="${friendChange.friendData.photo50}"/></a></td>

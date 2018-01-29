@@ -13,6 +13,7 @@ CREATE TABLE abstract_data
     user_id BIGINT REFERENCES "user"(id),
     remote_id BIGINT NOT NULL,
     last_update TIMESTAMP,
+    last_entry TIMESTAMP NOT NULL,
     removed BOOLEAN,
     first_name VARCHAR(256) NOT NULL,
     last_name VARCHAR(256) NOT NULL,

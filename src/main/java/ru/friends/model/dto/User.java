@@ -28,6 +28,9 @@ public class User {
     @Column
     Instant lastUpdate;
 
+    @Column
+    Instant lastEntry;
+
     @OneToMany(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
     List<FriendData> friends;

@@ -8,6 +8,7 @@ import ru.friends.model.domain.IntervalType;
 import ru.friends.model.dto.User;
 import ru.friends.repository.UserRepository;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -18,22 +19,12 @@ public class UserService {
     @Autowired
     FriendHandlingService friendHandlingService;
 
-    @Autowired
-    UserService self;
-
     @Value("${user.IntervalType.default:EVERY_HOUR}")
     IntervalType intervalType;
 
-    public void checkAndCreateIfNeeded(long viewerId) {
-        Optional<User> userOptional = self.getUserOptional(viewerId);
-
-        if (!userOptional.isPresent())
-            self.createAndHandleUser(viewerId);
-    }
-
     @Transactional(readOnly = true)
-    public Optional<User> getUserOptional(long viewerId) {
-        return Optional.ofNullable(userRepository.findOne(viewerId));
+    public boolean isUserExists(long viewerId) {
+        return Optional.ofNullable(userRepository.findOne(viewerId)).isPresent();
     }
 
     @Transactional
@@ -41,8 +32,16 @@ public class UserService {
         User user = new User();
         user.setId(viewerId);
         user.setIntervalType(intervalType);
+        user.setLastEntry(Instant.now());
         User userSavedInDb = userRepository.save(user);
         friendHandlingService.updateFriendsForUser(userSavedInDb);
+    }
+
+    @Transactional
+    public void updateLastEntryForUser(long viewerId) {
+        User user = userRepository.findOne(viewerId);
+        user.setLastEntry(Instant.now());
+        userRepository.save(user);
     }
 
 }

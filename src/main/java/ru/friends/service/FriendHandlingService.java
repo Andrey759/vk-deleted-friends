@@ -263,8 +263,8 @@ public class FriendHandlingService implements ApplicationContextAware {
         userDataChange.setDetectTimeMin(oldData.getLastUpdate());
         userDataChange.setDetectTimeMax(newData.getLastUpdate());
         userDataChange.setFieldName(valueChange.getPropertyName());
-        userDataChange.setOldValue(valueChange.getLeft().toString());
-        userDataChange.setNewValue(valueChange.getRight().toString());
+        userDataChange.setOldValue(Optional.ofNullable(valueChange.getLeft()).map(Object::toString).orElse(null));
+        userDataChange.setNewValue(Optional.ofNullable(valueChange.getRight()).map(Object::toString).orElse(null));
 
         return userDataChange;
     }

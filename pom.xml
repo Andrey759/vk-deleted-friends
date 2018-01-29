@@ -6,7 +6,7 @@
 
     <groupId>Home</groupId>
     <artifactId>parsevk</artifactId>
-    <version>1.232</version>
+    <version>1.24</version>
 
     <packaging>war</packaging>
 

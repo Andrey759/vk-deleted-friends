@@ -31,9 +31,9 @@ public class AbstractController {
     @Value("${vk.user.auth.key.enabled:true}")
     boolean vkUserAuthKeyEnabled;
 
-    protected String handle(
+    protected String handlePageWithDataTable(
             Model model,
-            Long viewerId,
+            long viewerId,
             String authKey,
             Long friendRemoteId,
             ChangeType changeType,
@@ -43,17 +43,7 @@ public class AbstractController {
             Function<PageRequest, Page> function
     ) throws ClientException, ApiException {
 
-        if (viewerId == null)
-            throw new RuntimeException("Parameter 'view_id' required.");
-
-        if (vkUserAuthKeyEnabled && authKey == null)
-            throw new RuntimeException("Parameter 'auth_key' required.");
-
-        String authKeyGenerated = Hashing.md5()
-                .hashString(vkAppId + "_" + viewerId + "_" + vkAppProtectKey, Charset.defaultCharset())
-                .toString();
-        if (vkUserAuthKeyEnabled && !Objects.equals(authKey, authKeyGenerated))
-            throw new RuntimeException("'auth_key' wrong.");
+        validate(viewerId, authKey);
 
         if (page == null)
             page = 1;
@@ -74,6 +64,19 @@ public class AbstractController {
         return pageName;
     }
 
+    protected void validate(long viewerId, String authKey) {
+
+        if (vkUserAuthKeyEnabled && authKey == null)
+            throw new RuntimeException("Parameter 'auth_key' required.");
+
+        String authKeyGenerated = Hashing.md5()
+                .hashString(vkAppId + "_" + viewerId + "_" + vkAppProtectKey, Charset.defaultCharset())
+                .toString();
+
+        if (vkUserAuthKeyEnabled && !Objects.equals(authKey, authKeyGenerated))
+            throw new RuntimeException("'auth_key' wrong.");
+    }
+
     protected String getBaseUrlParams(long viewerId, String authKey) {
         StringBuilder builder = new StringBuilder().append("viewer_id=").append(viewerId);
 
@@ -84,7 +87,9 @@ public class AbstractController {
     }
 
     protected String getAllUrlParams(long viewerId, String authKey, Long friendRemoteId, ChangeType changeType) {
-        StringBuilder builder = new StringBuilder().append(viewerId);
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("viewer_id=").append(viewerId);
 
         if (authKey != null)
             builder.append("&auth_key=").append(authKey);

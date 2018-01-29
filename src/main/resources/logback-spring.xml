@@ -19,12 +19,8 @@
             <fileNamePattern>${log.files.path}/%d{MM.yyyy}/%d{dd.MM.yyyy}.log</fileNamePattern>
         </rollingPolicy>
 
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>1GB</maxFileSize>
-        </triggeringPolicy>
-
         <encoder>
-            <pattern>%d{HH:mm:ss} | %-5level | %msg%n</pattern>
+            <pattern>%d{dd.MM HH:mm:ss} | %-5level | %msg%n</pattern>
         </encoder>
 
     </appender>
@@ -37,12 +33,8 @@
             <fileNamePattern>${log.files.path}/%d{MM.yyyy}/%d{dd.MM.yyyy}.error.log</fileNamePattern>
         </rollingPolicy>
 
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>1GB</maxFileSize>
-        </triggeringPolicy>
-
         <encoder>
-            <pattern>%d{HH:mm:ss} | %-5level | %msg%n</pattern>
+            <pattern>%d{dd.MM HH:mm:ss} | %-5level | %msg%n</pattern>
         </encoder>
 
         <filter class="ch.qos.logback.classic.filter.LevelFilter">

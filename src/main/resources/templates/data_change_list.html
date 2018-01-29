@@ -11,9 +11,10 @@
         <title>Что изменилось у друзей</title>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <link rel="stylesheet" th:href="@{/css/container.css}"/>
         <link rel="stylesheet" th:href="@{/css/menu.css}"/>
-        <link rel="stylesheet" th:href="@{/css/table.css}"/>
         <link rel="stylesheet" th:href="@{/css/pagination.css}"/>
+        <link rel="stylesheet" th:href="@{/css/table.css}"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script type="text/javascript" th:inline="javascript">
@@ -24,17 +25,20 @@
         <script th:src="@{/js/data-change.search.js}"></script>
     </head>
     <body>
-        <div class="container-fluid">
+        <div class="container-fluid app-container">
             <th:block th:replace="fragments :: menu('data-change-list', ${baseUrlParams})">...</th:block>
             <div class="col-sm-12">
                 <table class="table table-striped vertical-middle">
                     <tr class="row">
                         <th></th>
                         <th>Фамилия и имя</th>
-                        <th>Прмежуток события&nbsp;&nbsp;<a href="#" data-toggle="tooltip" data-placement="right" title="Проверка данных происходит раз в определённый промежуток времени. Само изменение происходит где-то между этими проверками. В этом столбце указан диапазон времени между ближайшими проверками, в который произошло событие."><span class="glyphicon glyphicon-question-sign"></span></a></th>
+                        <th>Промежуток&nbsp;&nbsp;<a href="#" data-toggle="tooltip" data-placement="right" title="Проверка данных происходит раз в определённый промежуток времени. Само изменение происходит где-то между этими проверками. В этом столбце указан диапазон времени между ближайшими проверками, в который произошло событие."><span class="glyphicon glyphicon-question-sign"></span></a></th>
                         <th>Что изменилось</th>
-                        <th>Старое значение</th>
-                        <th>Новое значение</th>
+                        <th>Старое</th>
+                        <th>Новое</th>
+                    </tr>
+                    <tr class="row" th:if="${resultList.isEmpty()}">
+                        <td colspan="6" class="text-center bg-info">На текущей момент нету ни одной записи, чтобы показать</td>
                     </tr>
                     <tr class="row" th:each="dataChange : ${resultList}">
                         <td class="padding0 width50"><a th:href="${dataChange.friendData.url}" target="_blank"><img th:src="${dataChange.friendData.photo50}"/></a></td>

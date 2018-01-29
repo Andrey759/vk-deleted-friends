@@ -22,13 +22,13 @@ public class DataChangeController extends AbstractController {
     @GetMapping("/data-change-list")
     public String getDataChangeList(
             Model model,
-            @RequestParam(name = "viewer_id", required = false) Long viewerId,
+            @RequestParam(name = "viewer_id") long viewerId,
             @RequestParam(name = "auth_key", required = false) String authKey,
             @RequestParam(required = false) Integer page,
             @RequestParam(name = "friend_remote_id", required = false) Long friendRemoteId
     ) throws URISyntaxException, ClientException, ApiException {
 
-        return super.handle(
+        return super.handlePageWithDataTable(
                 model, viewerId, authKey, friendRemoteId, null, page, "data-change-list", "data_change_list",
                 pageRequest -> friendRemoteId == null
                         ? dataChangeService.findByUserId(viewerId, pageRequest)
