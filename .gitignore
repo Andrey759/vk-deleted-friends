@@ -7,3 +7,4 @@ MANIFEST.MF
 keystore.p12
 application-dev.properties
 application-prod.properties
+application-test.properties
