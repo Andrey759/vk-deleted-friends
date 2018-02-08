@@ -17,6 +17,8 @@ CREATE TABLE abstract_data
     removed BOOLEAN,
     first_name VARCHAR(256) NOT NULL,
     last_name VARCHAR(256) NOT NULL,
+    b_date TIMESTAMP,
+    occupation VARCHAR(256),
     nickname VARCHAR(256),
     sex_type VARCHAR(50),
     deactivated_type VARCHAR(50),

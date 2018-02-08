@@ -5,18 +5,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.common.base.Throwables;
+import com.vk.api.sdk.client.TransportClient;
+import com.vk.api.sdk.client.VkApiClient;
+import com.vk.api.sdk.client.actors.ServiceActor;
+import com.vk.api.sdk.exceptions.ApiException;
+import com.vk.api.sdk.exceptions.ClientException;
+import com.vk.api.sdk.httpclient.HttpTransportClient;
+import com.vk.api.sdk.objects.users.UserFull;
+import com.vk.api.sdk.objects.users.UserXtrCounters;
+import com.vk.api.sdk.queries.users.UserField;
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.friends.converter.FriendDataConverter;
 import ru.friends.model.dto.data.FriendData;
-import ru.friends.model.dto.remote.RemoteUserData;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.vk.api.sdk.queries.users.UserField.*;
 
 @Service
 public class ExternalRequestService {
@@ -28,6 +41,46 @@ public class ExternalRequestService {
     private static final String VK_API_GET_FRIENDS_SHORT = "https://api.vk.com/method/friends.get?user_id=%d&fields=" +
             "nickname,domain,sex,photo_50,relation";
 
+    private static final List<UserField> FIELD_LIST = Arrays.asList(
+            PHOTO_ID,
+            SEX,        //++
+            BDATE,      //+
+            CITY,
+            COUNTRY,
+            HOME_TOWN,
+            PHOTO_50,   //++
+            PHOTO_MAX_ORIG,
+            LISTS,
+            DOMAIN,     //++
+            CONTACTS,
+            SITE,
+            EDUCATION,
+            UNIVERSITIES,
+            SCHOOLS,
+            STATUS,
+            OCCUPATION, //+
+            NICKNAME,   //++
+            RELATIVES,
+            RELATION,   //++
+            PERSONAL,
+            CONNECTIONS,
+            EXPORTS,
+            ACTIVITIES,
+            INTERESTS,
+            MUSIC,
+            MOVIES,
+            TV,
+            BOOKS,
+            GAMES,
+            ABOUT,
+            QUOTES,
+            SCREEN_NAME,
+            MAIDEN_NAME,
+            FRIEND_STATUS,
+            CAREER,
+            MILITARY
+    );
+
     private static final ObjectReader READER = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
@@ -36,14 +89,20 @@ public class ExternalRequestService {
     @Autowired
     FriendDataConverter userDataConverter;
 
-    public List<FriendData> loadFriendsById(long id) {
+    @Value("${vk.app.id:}")
+    Integer vkAppId;
+    @Value("${vk.app.protect.key:}")
+    String vkAppProtectKey;
+
+    @Deprecated // but it works faster
+    public List<FriendData> loadFriendsByIdOld(long id) {
         try {
-            URL url = new URL(String.format(VK_API_GET_FRIENDS_SHORT, id));
+            URL url = new URL(String.format(VK_API_GET_FRIENDS, id));
             URLConnection connection = url.openConnection();
             String response = IOUtils.toString(connection.getInputStream(), "UTF-8");
             ResponseHolder responseDto = READER.readValue(response);
-            List<RemoteUserData> remoteUsers = responseDto.getResponse();
-            return userDataConverter.toDtoFromRemoteUserData(remoteUsers);
+            List<UserFull> remoteUsers = responseDto.getResponse();
+            return userDataConverter.toFriendDataFromFullUser(remoteUsers);
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
@@ -51,7 +110,28 @@ public class ExternalRequestService {
 
     @Data
     private static class ResponseHolder {
-        List<RemoteUserData> response;
+        List<UserFull> response;
+    }
+
+
+    public List<FriendData> loadFriendsById(Long id) {
+        TransportClient transportClient = HttpTransportClient.getInstance();
+        VkApiClient vk = new VkApiClient(transportClient);
+        ServiceActor actor = new ServiceActor(vkAppId, vkAppProtectKey);
+        List<Integer> friendIds = null;
+        try {
+            friendIds = vk.friends().get(actor).userId(id.intValue()).execute().getItems();
+        } catch (ApiException | ClientException e) {
+            Throwables.propagate(e);
+        }
+        List<String> friendIdStrings = friendIds.stream().map(Object::toString).collect(Collectors.toList());
+        List remoteUsers = null;
+        try {
+            remoteUsers = vk.users().get(actor).userIds(friendIdStrings).fields(FIELD_LIST).execute();
+        } catch (ApiException | ClientException e) {
+            Throwables.propagate(e);
+        }
+        return userDataConverter.toFriendDataFromFullUser(remoteUsers);
     }
 
 }

@@ -31,6 +31,21 @@ public class FriendData extends AbstractData {
     boolean removed;
 
     @Column
+    Instant bDate;
+
+    @Column
+    String city;
+
+    @Column
+    String country;
+
+    @Column
+    String homeTown;
+
+    @Column
+    String occupation;
+
+    @Column
     String nickname;
 
     @Enumerated(value = EnumType.STRING)

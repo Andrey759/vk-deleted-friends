@@ -63,6 +63,10 @@
                     <groupId>nz.net.ultraq.thymeleaf</groupId>
                     <artifactId>thymeleaf-layout-dialect</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.thymeleaf</groupId>
+                    <artifactId>thymeleaf-testing</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
