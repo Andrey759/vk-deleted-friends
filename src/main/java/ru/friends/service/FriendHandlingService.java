@@ -258,6 +258,12 @@ public class FriendHandlingService implements ApplicationContextAware {
                 && oldPhotoMather.group(1).equals(newPhotoMather.group(1)))
             return null;
 
+        String left = Optional.ofNullable(valueChange.getLeft()).map(Object::toString).orElse("");
+        String right = Optional.ofNullable(valueChange.getRight()).map(Object::toString).orElse("");
+
+        if (left.equals(right)) // null and empty string for example
+            return null;
+
         DataChange userDataChange = new DataChange();
         userDataChange.setData(newData);
         userDataChange.setDetectTimeMin(oldData.getLastUpdate());

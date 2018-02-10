@@ -2,29 +2,31 @@ package ru.friends.converter;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.vk.api.sdk.objects.base.BaseObject;
-import com.vk.api.sdk.objects.users.Occupation;
-import com.vk.api.sdk.objects.users.User;
-import com.vk.api.sdk.objects.users.UserFull;
-import com.vk.api.sdk.objects.users.UserMin;
-import org.mockito.internal.util.reflection.Fields;
+import com.vk.api.sdk.objects.users.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.util.StringUtils;
+import ru.friends.model.domain.LifeMainType;
+import ru.friends.model.domain.OpinionType;
+import ru.friends.model.domain.PeopleMainType;
+import ru.friends.model.domain.PoliticalType;
 import ru.friends.model.dto.data.FriendData;
-import ru.friends.model.dto.remote.RemoteUserData;
 import ru.friends.model.vo.FriendDataVo;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class FriendDataConverter extends AbstractConverter<FriendData, FriendDataVo> {
 
     private static final Map<String, Field> FIELD_MAP;
@@ -58,6 +60,7 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
         }
     }
 
+
     private void fillFriendDataColumns(UserFull userFull, FriendData friendData) {
         BeanUtils.copyProperties(userFull, friendData);
 
@@ -70,13 +73,119 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
         friendData.setRemoteId(userFull.getId());
         friendData.setLastUpdate(Instant.now());
         friendData.setRemoved(false);
-        //friendData.setBDate(Optional.ofNullable(userFull.getBdate()).map().orElse(null));
+        friendData.setBdate(Optional.ofNullable(userFull.getBdate()).map(FriendDataConverter::parseBdate).orElse(null));
         friendData.setCity(Optional.ofNullable(userFull.getCity()).map(BaseObject::getTitle).orElse(null));
         friendData.setCountry(Optional.ofNullable(userFull.getCity()).map(BaseObject::getTitle).orElse(null));
-        friendData.setHomeTown(userFull.getHomeTown());
+        //friendData.setHomeTown(userFull.getHomeTown());
+        //friendData.setSite(userFull.getSite());
+        //friendData.setUniversityName(userFull.getUniversityName());
+        //friendData.setFacultyName(userFull.getFacultyName());
+        //friendData.setGraduation(userFull.getGraduation());
+        //friendData.setEducationForm(userFull.getEducationForm());
+        //friendData.setEducationStatus(userFull.getEducationStatus());
+        friendData.setUniversities(formatList(Optional.ofNullable(userFull.getUniversities()), FriendDataConverter::formatUniversity));
+        friendData.setSchools(formatList(Optional.ofNullable(userFull.getSchools()), FriendDataConverter::formatSchool));
+        //friendData.setStatus(userFull.getStatus());
         friendData.setOccupation(Optional.ofNullable(userFull.getOccupation()).map(Occupation::getName).orElse(null));
+
+        friendData.setPoliticalType(formatIntegerEnum(Optional.ofNullable(userFull.getPersonal()).map(Personal::getPolitical), PoliticalType.values()));
+        friendData.setReligion(Optional.ofNullable(userFull.getPersonal()).map(Personal::getReligion).orElse(""));
+        friendData.setLifeMainType(formatIntegerEnum(Optional.ofNullable(userFull.getPersonal()).map(Personal::getLifeMain), LifeMainType.values()));
+        friendData.setPeopleMainType(formatIntegerEnum(Optional.ofNullable(userFull.getPersonal()).map(Personal::getPeopleMain), PeopleMainType.values()));
+        friendData.setSmokingType(formatIntegerEnum(Optional.ofNullable(userFull.getPersonal()).map(Personal::getSmoking), OpinionType.values()));
+        friendData.setAlcoholType(formatIntegerEnum(Optional.ofNullable(userFull.getPersonal()).map(Personal::getAlcohol), OpinionType.values()));
+        friendData.setInspiredBy(Optional.ofNullable(userFull.getPersonal()).map(Personal::getInspiredBy).orElse(""));
+
+        friendData.setTwitter(Optional.ofNullable(userFull.getExports()).map(Exports::getTwitter).orElse(null));
+        friendData.setFacebook(Optional.ofNullable(userFull.getExports()).map(Exports::getFacebook).orElse(null));
+        friendData.setLivejournal(Optional.ofNullable(userFull.getExports()).map(Exports::getLivejournal).orElse(null));
+
+        //friendData.setInstagram(userFull.getInstagram());
+        //friendData.setHomePhone(userFull.getHomePhone());
+        //friendData.setMobilePhone(userFull.getMobilePhone());
+
+        //friendData.setActivities(userFull.getActivities());
+        //friendData.setInterests(userFull.getInterests());
+        //friendData.setMusic(userFull.getMusic());
+        //friendData.setMovies(userFull.getMovies());
+        //friendData.setTv(userFull.getTv());
+        //friendData.setBooks(userFull.getBooks());
+        //friendData.setGames(userFull.getGames());
+        //friendData.setAbout(userFull.getAbout());
+        //friendData.setQuotes(userFull.getQuotes());
+        //friendData.setMaidenName(userFull.getMaidenName());
+
+        friendData.setCareer(formatList(Optional.ofNullable(userFull.getCareer()), FriendDataConverter::formatCareer));
+        friendData.setMilitary(formatList(Optional.ofNullable(userFull.getMilitary()), FriendDataConverter::formatMilitary));
+
         friendData.setRelationPartnerData(Optional.ofNullable(userFull.getRelationPartner())
                 .map(relationPartnerDataConverter::toRelationPartnerDataFromUserMin).orElse(null));
+    }
+
+    private static final DateTimeFormatter DATE_PATTERN_SHORT = DateTimeFormatter.ofPattern("d.M");
+    private static final DateTimeFormatter DATE_PATTERN_FULL = DateTimeFormatter.ofPattern("d.M.yyyy");
+
+    private static LocalDate parseBdate(String bdate) {
+        try {
+            return LocalDate.parse(bdate, DATE_PATTERN_FULL);
+        } catch (DateTimeParseException e1) {
+            try {
+                return LocalDate.parse(bdate, DATE_PATTERN_SHORT);
+            } catch (DateTimeParseException e2) {
+                log.error("Can't parse bdate: " + bdate);
+                return null;
+            }
+        }
+    }
+
+    private static <T> String formatList(Optional<List<T>> listOptional, Function<T, String> func) {
+        return StringUtils.join(listOptional.map(universities -> universities.stream()
+                .map(func).collect(Collectors.toList())).orElse(Collections.emptyList()), "; ");
+    }
+
+    private static String formatUniversity(University university) {
+        return new StringBuilder(university.getName())
+                .append(StringUtils.isEmpty(university.getFacultyName())     ? "" : ", " + university.getFaculty())
+                .append(StringUtils.isEmpty(university.getChairName())       ? "" : ", " + university.getChairName())
+                .append(StringUtils.isEmpty(university.getEducationForm())   ? "" : ", " + university.getEducationForm())
+                .append(StringUtils.isEmpty(university.getEducationStatus()) ? "" : ", " + university.getEducationStatus())
+                .toString();
+    }
+
+    private static String formatSchool(School school) {
+        return new StringBuilder(school.getName())
+                .append(StringUtils.isEmpty(school.getClassName())  ? "" : ", класс " + school.getClassName())
+                .append(school.getYearFrom() == null || school.getYearTo() == null ? ""
+                                                                    : ", " + school.getYearFrom() + " - " + school.getYearTo())
+                .append(school.getYearGraduated() == null           ? "" : ", год окончания " + school.getYearGraduated())
+                .toString();
+    }
+
+    private static String formatCareer(Career career) {
+        return new StringBuilder(career.getCompany())
+                .append(StringUtils.isEmpty(career.getCompany()) || StringUtils.isEmpty(career.getPosition()) ? "" : ", ")
+                .append(StringUtils.isEmpty(career.getPosition()) ? "" : career.getPosition())
+                .append(StringUtils.isEmpty(career.getCompany()) && StringUtils.isEmpty(career.getPosition()) ? "" : ", ")
+                .append(career.getFrom() == null || career.getUntil() == null ? "" : career.getFrom() + " - " + career.getUntil())
+                .toString();
+    }
+
+    private static String formatMilitary(Military military) {
+        return new StringBuilder(military.getUnit())
+                .append(military.getFrom() == null || military.getUnit() == null ? "" : ", " + military.getFrom() + " - " + military.getUntil())
+                .toString();
+    }
+
+    private static <T extends Enum> T formatIntegerEnum(Optional<Integer> indexOptional, T[] valuesArray) {
+        List<T> values = Arrays.asList(valuesArray);
+
+        if (indexOptional.isPresent() && indexOptional.get() >= values.size()) {
+            log.error("Can't parse value: " + indexOptional.get()
+                    + " for class " + values.get(0).getClass().getSimpleName());
+            return null;
+        }
+
+        return indexOptional.map(values::get).orElse(null);
     }
 
     @SuppressWarnings("unchecked")

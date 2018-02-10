@@ -3,12 +3,11 @@ package ru.friends.model.dto.data;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import ru.friends.model.domain.DeactivatedType;
-import ru.friends.model.domain.RelationType;
-import ru.friends.model.domain.SexType;
+import ru.friends.model.domain.*;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @EqualsAndHashCode(exclude = {FriendData.RELATION_PARTNER_DATA}, callSuper = true)
@@ -31,7 +30,7 @@ public class FriendData extends AbstractData {
     boolean removed;
 
     @Column
-    Instant bDate;
+    LocalDate bdate;
 
     @Column
     String city;
@@ -43,10 +42,115 @@ public class FriendData extends AbstractData {
     String homeTown;
 
     @Column
+    String photo50;
+
+    @Column
+    String site;
+
+    @Column
+    String facultyName;
+
+    @Column
+    Integer graduation;
+
+    @Column
+    String educationForm;
+
+    @Column
+    String educationStatus;
+
+    @Column
+    String universities;
+
+    @Column
+    String schools;
+
+    @Column
+    String status;
+
+    @Column
     String occupation;
 
     @Column
     String nickname;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column
+    PoliticalType politicalType;
+
+    @Column
+    String religion;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column
+    LifeMainType lifeMainType;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column
+    PeopleMainType peopleMainType;
+
+    @Column
+    OpinionType alcoholType;
+
+    @Column
+    OpinionType smokingType;
+
+    @Column
+    String inspiredBy;
+
+    @Column
+    Integer twitter;
+
+    @Column
+    Integer facebook;
+
+    @Column
+    Integer livejournal;
+
+    @Column
+    String instagram;
+
+    @Column
+    String homePhone;
+
+    @Column
+    String mobilePhone;
+
+    @Column
+    String activities;
+
+    @Column
+    String interests;
+
+    @Column
+    String music;
+
+    @Column
+    String movies;
+
+    @Column
+    String tv;
+
+    @Column
+    String books;
+
+    @Column
+    String games;
+
+    @Column
+    String about;
+
+    @Column
+    String quotes;
+
+    @Column
+    String maidenName;
+
+    @Column
+    String career;
+
+    @Column
+    String military;
 
     @Enumerated(value = EnumType.STRING)
     @Column
@@ -58,9 +162,6 @@ public class FriendData extends AbstractData {
 
     @Column
     String domain;
-
-    @Column
-    String photo50;
 
     @Enumerated(value = EnumType.STRING)
     @Column

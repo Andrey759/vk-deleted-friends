@@ -12,7 +12,6 @@ import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.users.UserFull;
-import com.vk.api.sdk.objects.users.UserXtrCounters;
 import com.vk.api.sdk.queries.users.UserField;
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
@@ -42,43 +41,41 @@ public class ExternalRequestService {
             "nickname,domain,sex,photo_50,relation";
 
     private static final List<UserField> FIELD_LIST = Arrays.asList(
-            PHOTO_ID,
             SEX,        //++
             BDATE,      //+
-            CITY,
-            COUNTRY,
-            HOME_TOWN,
+            CITY,       //+
+            COUNTRY,    //+
+            HOME_TOWN,  //+
             PHOTO_50,   //++
-            PHOTO_MAX_ORIG,
-            LISTS,
+            PHOTO_ID,   //???
+            PHOTO_MAX_ORIG, //???
+            //LISTS,
             DOMAIN,     //++
-            CONTACTS,
-            SITE,
-            EDUCATION,
-            UNIVERSITIES,
-            SCHOOLS,
-            STATUS,
+            //CONTACTS, //???
+            SITE,       //+
+            EDUCATION,  //+
+            UNIVERSITIES,//+
+            SCHOOLS,    //+
+            STATUS,     //+
             OCCUPATION, //+
             NICKNAME,   //++
-            RELATIVES,
+            //RELATIVES,  // skip
             RELATION,   //++
-            PERSONAL,
-            CONNECTIONS,
-            EXPORTS,
-            ACTIVITIES,
-            INTERESTS,
-            MUSIC,
-            MOVIES,
-            TV,
-            BOOKS,
-            GAMES,
-            ABOUT,
-            QUOTES,
-            SCREEN_NAME,
-            MAIDEN_NAME,
-            FRIEND_STATUS,
-            CAREER,
-            MILITARY
+            PERSONAL,   //+
+            //CONNECTIONS, //???
+            EXPORTS,    //+
+            ACTIVITIES, //+
+            INTERESTS,  //+
+            MUSIC,      //+
+            MOVIES,     //+
+            TV,         //+
+            BOOKS,      //+
+            GAMES,      //+
+            ABOUT,      //+
+            QUOTES,     //+
+            MAIDEN_NAME,//+
+            CAREER,     //+
+            MILITARY    //+
     );
 
     private static final ObjectReader READER = new ObjectMapper()
@@ -114,6 +111,7 @@ public class ExternalRequestService {
     }
 
 
+    @SuppressWarnings("unchecked")
     public List<FriendData> loadFriendsById(Long id) {
         TransportClient transportClient = HttpTransportClient.getInstance();
         VkApiClient vk = new VkApiClient(transportClient);
