@@ -30,31 +30,37 @@
             <div class="col-sm-12">
                 <table class="table table-striped vertical-middle">
                     <tr class="row">
-                        <th></th>
-                        <th>Фамилия и имя</th>
-                        <th>Промежуток&nbsp;&nbsp;<a href="#" data-toggle="tooltip" data-placement="right" title="Проверка данных происходит раз в определённый промежуток времени. Само изменение происходит где-то между этими проверками. В этом столбце указан диапазон времени между ближайшими проверками, в который произошло событие."><span class="glyphicon glyphicon-question-sign"></span></a></th>
-                        <th>Что изменилось</th>
-                        <th>Старое</th>
-                        <th>Новое</th>
+                        <th class="width50"></th>
+                        <th class="width130">Фамилия и имя</th>
+                        <th class="width130">Промежуток&nbsp;&nbsp;<a href="#" data-toggle="tooltip" data-placement="right" title="Проверка данных происходит раз в определённый промежуток времени. Само изменение происходит где-то между этими проверками. В этом столбце указан диапазон времени между ближайшими проверками, в который произошло событие."><span class="glyphicon glyphicon-question-sign"></span></a></th>
+                        <th class="width130">Что изменилось</th>
+                        <th class="width165">Старое</th>
+                        <th class="width165">Новое</th>
                     </tr>
                     <tr class="row" th:if="${resultList.isEmpty()}">
-                        <td colspan="6" class="text-center bg-info">На текущей момент нету ни одной записи, чтобы показать</td>
+                        <td colspan="6" class="text-center bg-info">Нет информации</td>
                     </tr>
                     <tr class="row" th:each="dataChange : ${resultList}">
                         <td class="padding0 width50"><a th:href="${dataChange.friendData.url}" target="_blank"><img th:src="${dataChange.friendData.photo50}"/></a></td>
-                        <td><a th:href="${dataChange.friendData.url}" target="_blank" th:text="${dataChange.friendData.firstAndLastName}">...</a></td>
-                        <td class="width130">
+                        <td class="td-padding"><a th:href="${dataChange.friendData.url}" target="_blank" th:text="${dataChange.friendData.firstAndLastName}">...</a></td>
+                        <td class="td-padding">
                             <div th:text="${#dates.format(dataChange.detectTimeMin, 'dd.MM.yyyy HH:mm')}">...</div>
                             <div th:text="${#dates.format(dataChange.detectTimeMax, 'dd.MM.yyyy HH:mm')}">...</div>
                         </td>
-                        <td th:text="#{FieldName.__${dataChange.fieldName}__}">...</td>
-                        <td th:classappend="${dataChange.fieldName == 'photo50' ? 'padding0' : ''}">
+                        <td class="td-padding"><div class="height37 width114 overflow" th:text="#{FieldName.__${dataChange.fieldName}__}">...</div></td>
+                        <td class="td-padding" th:classappend="${dataChange.fieldName == 'photo50' ? 'padding0' : ''}"
+                                data-toggle="tooltip" data-placement="left"
+                                th:title="${dataChange.fieldName != 'photo50' &amp;&amp; dataChange.oldValue.length() > 50 ? dataChange.oldValue : ''}">
                             <img th:if="${dataChange.fieldName == 'photo50'}" th:src="${dataChange.oldValue}"/>
-                            <th:block th:unless="${dataChange.fieldName == 'photo50'}" th:text="${dataChange.oldValue}"></th:block>
+                            <div class="height37 width149 overflow" th:unless="${dataChange.fieldName == 'photo50'}"
+                                    th:text="${dataChange.oldValue}"></div>
                         </td>
-                        <td th:classappend="${dataChange.fieldName == 'photo50' ? 'padding0' : ''}">
+                        <td class="td-padding" th:classappend="${dataChange.fieldName == 'photo50' ? 'padding0' : ''}"
+                                data-toggle="tooltip" data-placement="left"
+                                th:title="${dataChange.fieldName != 'photo50' &amp;&amp; dataChange.newValue.length() > 50 ? dataChange.newValue : ''}">
                             <img th:if="${dataChange.fieldName == 'photo50'}" th:src="${dataChange.newValue}"/>
-                            <th:block th:unless="${dataChange.fieldName == 'photo50'}" th:text="${dataChange.newValue}"></th:block>
+                            <div class="height37 width149 overflow" th:unless="${dataChange.fieldName == 'photo50'}"
+                                    th:text="${dataChange.newValue}"></div>
                         </td>
                     </tr>
                 </table>

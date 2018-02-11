@@ -28,6 +28,8 @@ public class AbstractController {
     Integer vkAppId;
     @Value("${vk.app.protect.key:}")
     String vkAppProtectKey;
+    @Value("${vk.app.service.key:}")
+    String vkAppServiceKey;
     @Value("${vk.user.auth.key.enabled:true}")
     boolean vkUserAuthKeyEnabled;
 
@@ -106,7 +108,7 @@ public class AbstractController {
     private UserXtrCounters getUser(Integer viewerId) throws ClientException, ApiException {
         TransportClient transportClient = HttpTransportClient.getInstance();
         VkApiClient vk = new VkApiClient(transportClient);
-        ServiceActor actor = new ServiceActor(vkAppId, vkAppProtectKey);
+        ServiceActor actor = new ServiceActor(vkAppId, vkAppServiceKey);
         List<String> viewerIds = Collections.singletonList(viewerId.toString());
         return vk.users().get(actor).userIds(viewerIds).execute().get(0);
     }

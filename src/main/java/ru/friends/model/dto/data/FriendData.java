@@ -7,7 +7,6 @@ import ru.friends.model.domain.*;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.time.LocalDate;
 
 @Entity
 @EqualsAndHashCode(exclude = {FriendData.RELATION_PARTNER_DATA}, callSuper = true)
@@ -17,6 +16,11 @@ public class FriendData extends AbstractData {
 
     public static final String LAST_UPDATE = "lastUpdate";
     public static final String REMOVED = "removed";
+    public static final String POLITICAL_TYPE = "politicalType";
+    public static final String LIFE_MAIN_TYPE = "lifeMainType";
+    public static final String PEOPLE_MAIN_TYPE = "peopleMainType";
+    public static final String SMOKING_TYPE = "smokingType";
+    public static final String ALCOHOL_TYPE = "alcoholType";
     public static final String SEX_TYPE = "sexType";
     public static final String DEACTIVATED_TYPE = "deactivatedType";
     public static final String RELATION_TYPE = "relationType";
@@ -30,7 +34,7 @@ public class FriendData extends AbstractData {
     boolean removed;
 
     @Column
-    LocalDate bdate;
+    String bdate;
 
     @Column
     String city;
@@ -90,10 +94,10 @@ public class FriendData extends AbstractData {
     PeopleMainType peopleMainType;
 
     @Column
-    OpinionType alcoholType;
+    OpinionType smokingType;
 
     @Column
-    OpinionType smokingType;
+    OpinionType alcoholType;
 
     @Column
     String inspiredBy;

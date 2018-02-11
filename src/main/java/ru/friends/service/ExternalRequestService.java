@@ -88,8 +88,8 @@ public class ExternalRequestService {
 
     @Value("${vk.app.id:}")
     Integer vkAppId;
-    @Value("${vk.app.protect.key:}")
-    String vkAppProtectKey;
+    @Value("${vk.app.service.key:}")
+    String vkAppServiceKey;
 
     @Deprecated // but it works faster
     public List<FriendData> loadFriendsByIdOld(long id) {
@@ -115,7 +115,7 @@ public class ExternalRequestService {
     public List<FriendData> loadFriendsById(Long id) {
         TransportClient transportClient = HttpTransportClient.getInstance();
         VkApiClient vk = new VkApiClient(transportClient);
-        ServiceActor actor = new ServiceActor(vkAppId, vkAppProtectKey);
+        ServiceActor actor = new ServiceActor(vkAppId, vkAppServiceKey);
         List<Integer> friendIds = null;
         try {
             friendIds = vk.friends().get(actor).userId(id.intValue()).execute().getItems();

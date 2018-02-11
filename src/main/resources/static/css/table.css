@@ -3,12 +3,22 @@
     border: 0;
 }
 
+.td-padding {
+    padding-top: 6px !important;
+    padding-bottom: 2px !important;
+}
+
 .padding0 {
     padding: 0 !important;
 }
 
 .vertical-middle td {
     vertical-align: middle !important;
+}
+
+.overflow {
+    display: inline-block;
+    overflow: hidden;
 }
 
 .width50 {
@@ -19,6 +29,27 @@
     width: 100px;
 }
 
+.width114 {
+    width: 114px;
+}
+
 .width130 {
     width: 130px;
+}
+
+.width149 {
+    width: 149px;
+}
+
+.width165 {
+    width: 165px;
+}
+
+.height37 {
+    height: 37px;
+}
+
+.tooltip-inner {
+    max-width: 800px;
+    white-space: pre-wrap;
 }

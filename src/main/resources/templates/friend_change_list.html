@@ -37,7 +37,7 @@
                         <th colspan="2" th:text="#{enum.ChangeType.ADDED} + ' / ' + #{enum.ChangeType.REMOVED}">...</th>
                     </tr>
                     <tr class="row" th:if="${resultList.isEmpty()}">
-                        <td colspan="6" class="text-center bg-info">На текущей момент нету ни одной записи, чтобы показать</td>
+                        <td colspan="6" class="text-center bg-info">Нет информации</td>
                     </tr>
                     <tr class="row" th:each="friendChange : ${resultList}">
                         <td class="padding0 width50"><a th:href="${friendChange.friendData.url}" target="_blank"><img th:src="${friendChange.friendData.photo50}"/></a></td>
