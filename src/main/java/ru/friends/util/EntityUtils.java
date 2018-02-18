@@ -1,7 +1,7 @@
 package ru.friends.util;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import ru.friends.model.dto.DataChange;
 import ru.friends.model.dto.FriendChange;
@@ -67,15 +67,12 @@ public abstract class EntityUtils {
         return true;
     }
 
+    @SneakyThrows
     public static <T> T copy(T source) {
-        try {
-            if (source instanceof Collection) {
-                return (T) tryCopyList((Collection) source);
-            } else {
-                return tryCopy(source);
-            }
-        } catch (IllegalAccessException | InstantiationException e) {
-            throw Throwables.propagate(e);
+        if (source instanceof Collection) {
+            return (T) tryCopyList((Collection) source);
+        } else {
+            return tryCopy(source);
         }
     }
 

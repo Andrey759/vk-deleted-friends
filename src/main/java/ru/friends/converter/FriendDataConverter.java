@@ -1,9 +1,9 @@
 package ru.friends.converter;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.vk.api.sdk.objects.base.BaseObject;
 import com.vk.api.sdk.objects.users.*;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,15 +48,12 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
         return userFullList.stream().map(this::toFriendDataFromFullUser).collect(Collectors.toList());
     }
 
+    @SneakyThrows
     public FriendData toFriendDataFromFullUser(UserFull userFull) {
-        try {
-            FriendData FriendData = dtoClass.newInstance();
-            fillFriendDataColumns(userFull, FriendData);
+        FriendData FriendData = dtoClass.newInstance();
+        fillFriendDataColumns(userFull, FriendData);
 
-            return FriendData;
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw Throwables.propagate(e);
-        }
+        return FriendData;
     }
 
 
@@ -72,19 +69,11 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
         friendData.setRemoteId(userFull.getId());
         friendData.setLastUpdate(Instant.now());
         friendData.setRemoved(false);
-        //friendData.setBdate(userFull.getBdate());
         friendData.setCity(Optional.ofNullable(userFull.getCity()).map(BaseObject::getTitle).orElse(null));
         friendData.setCountry(Optional.ofNullable(userFull.getCity()).map(BaseObject::getTitle).orElse(null));
-        //friendData.setHomeTown(userFull.getHomeTown());
-        //friendData.setSite(userFull.getSite());
-        //friendData.setUniversityName(userFull.getUniversityName());
-        //friendData.setFacultyName(userFull.getFacultyName());
-        //friendData.setGraduation(userFull.getGraduation());
-        //friendData.setEducationForm(userFull.getEducationForm());
-        //friendData.setEducationStatus(userFull.getEducationStatus());
+
         friendData.setUniversities(formatList(Optional.ofNullable(userFull.getUniversities()), FriendDataConverter::formatUniversity));
         friendData.setSchools(formatList(Optional.ofNullable(userFull.getSchools()), FriendDataConverter::formatSchool));
-        //friendData.setStatus(userFull.getStatus());
         friendData.setOccupation(Optional.ofNullable(userFull.getOccupation()).map(Occupation::getName).orElse(null));
 
         friendData.setPoliticalType(formatIntegerEnum(Optional.ofNullable(userFull.getPersonal()).map(Personal::getPolitical), PoliticalType.values()));
@@ -98,21 +87,6 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
         friendData.setTwitter(Optional.ofNullable(userFull.getExports()).map(Exports::getTwitter).orElse(null));
         friendData.setFacebook(Optional.ofNullable(userFull.getExports()).map(Exports::getFacebook).orElse(null));
         friendData.setLivejournal(Optional.ofNullable(userFull.getExports()).map(Exports::getLivejournal).orElse(null));
-
-        //friendData.setInstagram(userFull.getInstagram());
-        //friendData.setHomePhone(userFull.getHomePhone());
-        //friendData.setMobilePhone(userFull.getMobilePhone());
-
-        //friendData.setActivities(userFull.getActivities());
-        //friendData.setInterests(userFull.getInterests());
-        //friendData.setMusic(userFull.getMusic());
-        //friendData.setMovies(userFull.getMovies());
-        //friendData.setTv(userFull.getTv());
-        //friendData.setBooks(userFull.getBooks());
-        //friendData.setGames(userFull.getGames());
-        //friendData.setAbout(userFull.getAbout());
-        //friendData.setQuotes(userFull.getQuotes());
-        //friendData.setMaidenName(userFull.getMaidenName());
 
         friendData.setCareer(formatList(Optional.ofNullable(userFull.getCareer()), FriendDataConverter::formatCareer));
         friendData.setMilitary(formatList(Optional.ofNullable(userFull.getMilitary()), FriendDataConverter::formatMilitary));
@@ -184,39 +158,36 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
         return indexOptional.map(values::get).orElse(null);
     }
 
+    @SneakyThrows
     @SuppressWarnings("unchecked")
     private static void fillEnumField(Field fieldTo, UserFull userFull, FriendData FriendData) {
-        try {
-            String fieldName = fieldTo.getName().replace("Type", "");
+        String fieldName = fieldTo.getName().replace("Type", "");
 
-            if (!FIELD_MAP.containsKey(fieldName))
-                return;
+        if (!FIELD_MAP.containsKey(fieldName))
+            return;
 
-            Field fieldFrom = FIELD_MAP.get(fieldName);
+        Field fieldFrom = FIELD_MAP.get(fieldName);
 
-            fieldFrom.setAccessible(true);
-            fieldTo.setAccessible(true);
+        fieldFrom.setAccessible(true);
+        fieldTo.setAccessible(true);
 
-            Class<Enum> enumClass = (Class<Enum>) fieldTo.getType();
-            Class sourceClass = fieldFrom.getType();
+        Class<Enum> enumClass = (Class<Enum>) fieldTo.getType();
+        Class sourceClass = fieldFrom.getType();
 
-            Enum enumValue = null;
-            if (fieldFrom.get(userFull) == null) {
-                // nothing
-            } else if (int.class.equals(sourceClass)) {
-                enumValue = EnumConverter.getByNumber(fieldFrom.getInt(userFull), enumClass);
-            } else if (Integer.class.equals(sourceClass)) {
-                enumValue = EnumConverter.getByNumber((Integer) fieldFrom.get(userFull), enumClass);
-            } else if (String.class.equals(sourceClass)) {
-                enumValue = EnumConverter.getByName((String) fieldFrom.get(userFull), enumClass);
-            } else if (sourceClass.isEnum()) {
-                String stringValue = ((Enum) fieldFrom.get(userFull)).name();
-                enumValue = EnumConverter.getByName(stringValue, enumClass);
-            }
-            fieldTo.set(FriendData, enumValue);
-        } catch (IllegalAccessException e) {
-            throw Throwables.propagate(e);
+        Enum enumValue = null;
+        if (fieldFrom.get(userFull) == null) {
+            // nothing
+        } else if (int.class.equals(sourceClass)) {
+            enumValue = EnumConverter.getByNumber(fieldFrom.getInt(userFull), enumClass);
+        } else if (Integer.class.equals(sourceClass)) {
+            enumValue = EnumConverter.getByNumber((Integer) fieldFrom.get(userFull), enumClass);
+        } else if (String.class.equals(sourceClass)) {
+            enumValue = EnumConverter.getByName((String) fieldFrom.get(userFull), enumClass);
+        } else if (sourceClass.isEnum()) {
+            String stringValue = ((Enum) fieldFrom.get(userFull)).name();
+            enumValue = EnumConverter.getByName(stringValue, enumClass);
         }
+        fieldTo.set(FriendData, enumValue);
     }
 
     @Override

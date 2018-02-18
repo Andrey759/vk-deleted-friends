@@ -1,8 +1,8 @@
 package ru.friends.converter;
 
-import com.google.common.base.Throwables;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,14 +22,11 @@ public abstract class AbstractConverter<DTO, VO> {
         return voCollection.stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    @SneakyThrows
     public DTO toDto(VO vo) {
-        try {
-            DTO dto = dtoClass.newInstance();
-            BeanUtils.copyProperties(vo, dto);
-            return dto;
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw Throwables.propagate(e);
-        }
+        DTO dto = dtoClass.newInstance();
+        BeanUtils.copyProperties(vo, dto);
+        return dto;
     }
 
     public Page<VO> toVo(Page<DTO> dtoPage) {
@@ -41,14 +38,11 @@ public abstract class AbstractConverter<DTO, VO> {
         return dtoList.stream().map(this::toVo).collect(Collectors.toList());
     }
 
+    @SneakyThrows
     public VO toVo(DTO dto) {
-        try {
-            VO vo = voClass.newInstance();
-            BeanUtils.copyProperties(dto, vo);
-            return vo;
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw Throwables.propagate(e);
-        }
+        VO vo = voClass.newInstance();
+        BeanUtils.copyProperties(dto, vo);
+        return vo;
     }
 
 }
