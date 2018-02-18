@@ -47,7 +47,6 @@ public class ExternalRequestService {
             COUNTRY,    //+
             HOME_TOWN,  //+
             PHOTO_50,   //++
-            PHOTO_ID,   //???
             PHOTO_MAX_ORIG, //???
             //LISTS,
             DOMAIN,     //++

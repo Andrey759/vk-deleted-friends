@@ -22,6 +22,7 @@ CREATE TABLE abstract_data
     country VARCHAR(256),
     home_town VARCHAR(256),
     photo50 VARCHAR(256),
+    photo_max_orig VARCHAR(256),
     site VARCHAR(256),
     university_name VARCHAR(256),
     faculty_name VARCHAR(256),

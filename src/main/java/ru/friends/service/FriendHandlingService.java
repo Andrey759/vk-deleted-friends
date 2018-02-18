@@ -16,6 +16,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
+import ru.friends.converter.DataChangeConverter;
 import ru.friends.model.domain.ChangeType;
 import ru.friends.model.domain.IntervalType;
 import ru.friends.model.dto.DataChange;
@@ -237,7 +238,7 @@ public class FriendHandlingService implements ApplicationContextAware {
                 .collect(Collectors.toList());
     }
 
-    private static final Pattern PHOTO_PATTERN = Pattern.compile("^https://[a-z0-9.]+/([A-z0-9./]+)$");
+    private static final Pattern PHOTO_PATTERN = Pattern.compile("^https://(?:[A-z0-9._-]+/)+([A-z0-9._-]+)$");
 
     private static DataChange toFriendDataChange(FriendData oldData, FriendData newData, Change change) {
         if (!(change instanceof ValueChange))
@@ -247,6 +248,9 @@ public class FriendHandlingService implements ApplicationContextAware {
 
         if (FriendData.LAST_UPDATE.equals(valueChange.getPropertyName())
                 || FriendData.REMOVED.equals(valueChange.getPropertyName())
+                || FriendData.COUNTRY.equals(valueChange.getPropertyName())
+                || FriendData.OCCUPATION.equals(valueChange.getPropertyName())
+                || FriendData.PHOTO_MAX_ORIG.equals(valueChange.getPropertyName())
                 || FriendData.RELATION_PARTNER_DATA.equals(valueChange.getPropertyName()))
             return null;
 
@@ -264,13 +268,20 @@ public class FriendHandlingService implements ApplicationContextAware {
         if (left.equals(right)) // null and empty string for example
             return null;
 
+        if (FriendData.PHOTO_50.equals(valueChange.getPropertyName())) {
+            String oldPhotoMaxOrig = Optional.ofNullable(oldData.getPhotoMaxOrig()).map(Object::toString).orElse("");
+            String newPhotoMaxOrig = Optional.ofNullable(newData.getPhotoMaxOrig()).map(Object::toString).orElse("");
+            left += DataChangeConverter.PHOTO_SEPARATOR + oldPhotoMaxOrig;
+            right += DataChangeConverter.PHOTO_SEPARATOR + newPhotoMaxOrig;
+        }
+
         DataChange userDataChange = new DataChange();
         userDataChange.setData(newData);
         userDataChange.setDetectTimeMin(oldData.getLastUpdate());
         userDataChange.setDetectTimeMax(newData.getLastUpdate());
         userDataChange.setFieldName(valueChange.getPropertyName());
-        userDataChange.setOldValue(Optional.ofNullable(valueChange.getLeft()).map(Object::toString).orElse(""));
-        userDataChange.setNewValue(Optional.ofNullable(valueChange.getRight()).map(Object::toString).orElse(""));
+        userDataChange.setOldValue(left);
+        userDataChange.setNewValue(right);
 
         return userDataChange;
     }

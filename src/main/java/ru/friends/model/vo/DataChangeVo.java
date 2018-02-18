@@ -23,4 +23,8 @@ public class DataChangeVo {
 
     String newValue;
 
+    String oldPhotoMaxOrig; // exists if "fieldName" is "photo50"
+
+    String newPhotoMaxOrig; // exists if "fieldName" is "photo50"
+
 }

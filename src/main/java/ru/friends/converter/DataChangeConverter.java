@@ -12,8 +12,12 @@ import ru.friends.model.dto.data.RelationPartnerData;
 import ru.friends.model.vo.DataChangeVo;
 import ru.friends.repository.RelationPartnerDataRepository;
 
+import java.util.Optional;
+
 @Component
 public class DataChangeConverter extends AbstractConverter<DataChange, DataChangeVo> {
+
+    public static final String PHOTO_SEPARATOR = "\n";
 
     @Autowired
     RelationPartnerDataRepository relationPartnerDataRepository;
@@ -31,8 +35,27 @@ public class DataChangeConverter extends AbstractConverter<DataChange, DataChang
         DataChangeVo dataChangeVo = super.toVo(dataChange);
 
         dataChangeVo.setFriendData(friendDataConverter.toVo((FriendData) dataChange.getData()));
-        dataChangeVo.setOldValue(formatValue(dataChange.getFieldName(), dataChange.getOldValue()));
-        dataChangeVo.setNewValue(formatValue(dataChange.getFieldName(), dataChange.getNewValue()));
+        if (FriendData.PHOTO_50.equals(dataChange.getFieldName())) {
+            String oldValue = Optional.ofNullable(dataChange.getOldValue()).orElse("");
+            String newValue = Optional.ofNullable(dataChange.getNewValue()).orElse("");
+            if (oldValue.contains(PHOTO_SEPARATOR)) {
+                String[] oldValues = oldValue.split(PHOTO_SEPARATOR);
+                dataChangeVo.setOldValue(oldValues[0]);
+                dataChangeVo.setOldPhotoMaxOrig(oldValues[1]);
+            } else {
+                dataChangeVo.setOldValue(oldValue);
+            }
+            if (newValue.contains(PHOTO_SEPARATOR)) {
+                String[] newValues = newValue.split(PHOTO_SEPARATOR);
+                dataChangeVo.setNewValue(newValues[0]);
+                dataChangeVo.setNewPhotoMaxOrig(newValues[1]);
+            } else {
+                dataChangeVo.setNewValue(newValue);
+            }
+        } else {
+            dataChangeVo.setOldValue(formatValue(dataChange.getFieldName(), dataChange.getOldValue()));
+            dataChangeVo.setNewValue(formatValue(dataChange.getFieldName(), dataChange.getNewValue()));
+        }
 
         return dataChangeVo;
     }

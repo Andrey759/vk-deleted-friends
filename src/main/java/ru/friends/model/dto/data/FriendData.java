@@ -16,6 +16,8 @@ public class FriendData extends AbstractData {
 
     public static final String LAST_UPDATE = "lastUpdate";
     public static final String REMOVED = "removed";
+    public static final String COUNTRY = "country";
+    public static final String OCCUPATION = "occupation";
     public static final String POLITICAL_TYPE = "politicalType";
     public static final String LIFE_MAIN_TYPE = "lifeMainType";
     public static final String PEOPLE_MAIN_TYPE = "peopleMainType";
@@ -25,6 +27,7 @@ public class FriendData extends AbstractData {
     public static final String DEACTIVATED_TYPE = "deactivatedType";
     public static final String RELATION_TYPE = "relationType";
     public static final String PHOTO_50 = "photo50";
+    public static final String PHOTO_MAX_ORIG = "photoMaxOrig";
     public static final String RELATION_PARTNER_DATA = "relationPartnerData";
 
     @Column
@@ -47,6 +50,9 @@ public class FriendData extends AbstractData {
 
     @Column
     String photo50;
+
+    @Column
+    String photoMaxOrig;
 
     @Column
     String site;

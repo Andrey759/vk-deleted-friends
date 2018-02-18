@@ -173,7 +173,7 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
     private static <T extends Enum> T formatIntegerEnum(Optional<Integer> indexOptional, T[] valuesArray) {
         List<T> values = Arrays.asList(valuesArray);
 
-        indexOptional = indexOptional.map(index -> index--);
+        indexOptional = indexOptional.map(index -> --index);
 
         if (indexOptional.isPresent() && indexOptional.get() >= values.size()) {
             log.error("Can't parse value: " + indexOptional.get()
