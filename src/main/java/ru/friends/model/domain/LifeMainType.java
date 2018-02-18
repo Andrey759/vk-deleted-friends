@@ -1,6 +1,7 @@
 package ru.friends.model.domain;
 
 public enum  LifeMainType {
+    UNKNOWN,
     FAMILY,
     MONEY,
     FUN,

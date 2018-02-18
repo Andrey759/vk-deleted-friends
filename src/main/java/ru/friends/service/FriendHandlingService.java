@@ -238,6 +238,7 @@ public class FriendHandlingService implements ApplicationContextAware {
                 .collect(Collectors.toList());
     }
 
+    private static final String DELETED_FIRST_NAME = "DELETED";
     private static final Pattern PHOTO_PATTERN = Pattern.compile("^https://(?:[A-z0-9._-]+/)+([A-z0-9._-]+)$");
 
     private static DataChange toFriendDataChange(FriendData oldData, FriendData newData, Change change) {
@@ -245,18 +246,23 @@ public class FriendHandlingService implements ApplicationContextAware {
             return null;
 
         ValueChange valueChange = (ValueChange) change;
+        String propertyName = valueChange.getPropertyName();
+        
+        if ((DELETED_FIRST_NAME.equals(oldData.getFirstName()) || DELETED_FIRST_NAME.equals(newData.getFirstName()))
+                && !FriendData.DEACTIVATED_TYPE.equals(propertyName))
+            return null;
 
-        if (FriendData.LAST_UPDATE.equals(valueChange.getPropertyName())
-                || FriendData.REMOVED.equals(valueChange.getPropertyName())
-                || FriendData.COUNTRY.equals(valueChange.getPropertyName())
-                || FriendData.OCCUPATION.equals(valueChange.getPropertyName())
-                || FriendData.PHOTO_MAX_ORIG.equals(valueChange.getPropertyName())
-                || FriendData.RELATION_PARTNER_DATA.equals(valueChange.getPropertyName()))
+        if (FriendData.LAST_UPDATE.equals(propertyName)
+                || FriendData.REMOVED.equals(propertyName)
+                || FriendData.COUNTRY.equals(propertyName)
+                || FriendData.OCCUPATION.equals(propertyName)
+                || FriendData.PHOTO_MAX_ORIG.equals(propertyName)
+                || FriendData.RELATION_PARTNER_DATA.equals(propertyName))
             return null;
 
         Matcher oldPhotoMather = PHOTO_PATTERN.matcher(Optional.ofNullable(oldData.getPhoto50()).orElse(""));
         Matcher newPhotoMather = PHOTO_PATTERN.matcher(Optional.ofNullable(newData.getPhoto50()).orElse(""));
-        if (FriendData.PHOTO_50.equals(valueChange.getPropertyName())
+        if (FriendData.PHOTO_50.equals(propertyName)
                 && oldPhotoMather.matches()
                 && newPhotoMather.matches()
                 && oldPhotoMather.group(1).equals(newPhotoMather.group(1)))
@@ -268,7 +274,7 @@ public class FriendHandlingService implements ApplicationContextAware {
         if (left.equals(right)) // null and empty string for example
             return null;
 
-        if (FriendData.PHOTO_50.equals(valueChange.getPropertyName())) {
+        if (FriendData.PHOTO_50.equals(propertyName)) {
             String oldPhotoMaxOrig = Optional.ofNullable(oldData.getPhotoMaxOrig()).map(Object::toString).orElse("");
             String newPhotoMaxOrig = Optional.ofNullable(newData.getPhotoMaxOrig()).map(Object::toString).orElse("");
             left += DataChangeConverter.PHOTO_SEPARATOR + oldPhotoMaxOrig;
@@ -279,7 +285,7 @@ public class FriendHandlingService implements ApplicationContextAware {
         userDataChange.setData(newData);
         userDataChange.setDetectTimeMin(oldData.getLastUpdate());
         userDataChange.setDetectTimeMax(newData.getLastUpdate());
-        userDataChange.setFieldName(valueChange.getPropertyName());
+        userDataChange.setFieldName(propertyName);
         userDataChange.setOldValue(left);
         userDataChange.setNewValue(right);
 

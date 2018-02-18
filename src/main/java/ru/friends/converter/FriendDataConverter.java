@@ -147,8 +147,6 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
     private static <T extends Enum> T formatIntegerEnum(Optional<Integer> indexOptional, T[] valuesArray) {
         List<T> values = Arrays.asList(valuesArray);
 
-        indexOptional = indexOptional.map(index -> --index);
-
         if (indexOptional.isPresent() && indexOptional.get() >= values.size()) {
             log.error("Can't parse value: " + indexOptional.get()
                     + " for class " + values.get(0).getClass().getSimpleName());
@@ -176,7 +174,8 @@ public class FriendDataConverter extends AbstractConverter<FriendData, FriendDat
 
         Enum enumValue = null;
         if (fieldFrom.get(userFull) == null) {
-            // nothing
+            // the first instance of any enum is UNKNOWN or NOT_DEACTIVATED
+            enumValue = enumClass.getEnumConstants()[0];
         } else if (int.class.equals(sourceClass)) {
             enumValue = EnumConverter.getByNumber(fieldFrom.getInt(userFull), enumClass);
         } else if (Integer.class.equals(sourceClass)) {
