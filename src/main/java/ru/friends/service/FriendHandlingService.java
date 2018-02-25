@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StopWatch;
 import ru.friends.converter.DataChangeConverter;
 import ru.friends.model.domain.ChangeType;
@@ -93,6 +94,10 @@ public class FriendHandlingService implements ApplicationContextAware {
     public void updateFriendsForUser(User user) {
         List<FriendData> oldFriends = EntityUtils.copy(Optional.ofNullable(user.getFriends()).orElse(Collections.emptyList()));
         List<FriendData> currentFriends = externalRequestService.loadFriendsById(user.getId());
+
+        if (CollectionUtils.isEmpty(currentFriends) && oldFriends.size() > 2) {
+            throw new RuntimeException("externalRequestService returned empty result for user.id=" + user.getId());
+        }
 
         Map<Long, FriendData> oldFriendsMap = EntityUtils.groupByRemoteId(oldFriends);
         Map<Long, FriendData> currentFriendsMap = EntityUtils.groupByRemoteId(currentFriends);
