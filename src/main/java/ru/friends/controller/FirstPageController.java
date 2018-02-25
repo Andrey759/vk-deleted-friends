@@ -26,7 +26,7 @@ public class FirstPageController extends AbstractController {
             viewerId = vkUserDefaultId;
 
         if (viewerId == null)
-            throw new RuntimeException("Parameter 'view_id' required.");
+            throw new RuntimeException("Parameter 'viewer_id' required.");
 
         if (userService.isUserExists(viewerId)) {
             userService.updateLastEntryForUser(viewerId);
