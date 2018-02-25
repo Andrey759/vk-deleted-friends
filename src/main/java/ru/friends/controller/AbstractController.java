@@ -43,7 +43,7 @@ public class AbstractController {
             String url,
             String pageName,
             Function<PageRequest, Page> function
-    ) throws ClientException, ApiException {
+    ) {
 
         validate(viewerId, authKey);
 
@@ -58,10 +58,10 @@ public class AbstractController {
         model.addAttribute("baseUrlParams", getBaseUrlParams(viewerId, authKey));
         model.addAttribute("allUrlParams", getAllUrlParams(viewerId, authKey, friendRemoteId, changeType));
 
-        if (page < 1 || (page > totalPages && totalPages > 0))
-            return vkUserAuthKeyEnabled
-                    ? "redirect:/" + url
-                    : "redirect:/" + url + "?viewer_id=" + viewerId;
+        if (page > totalPages && totalPages > 0) {
+            model.addAttribute("urlToRedirect", url);
+            return "js_redirect";
+        }
 
         return pageName;
     }

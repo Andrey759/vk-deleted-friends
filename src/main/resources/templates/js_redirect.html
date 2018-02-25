@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="Изменения в списке друзей"/>
+
+        <title>Что изменилось у друзей</title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script th:inline="javascript">
+            window.contextPath = /*[[@{/}]]*/ '';
+            window.baseUrlParams = /*[[${baseUrlParams}]]*/ '';
+            window.urlToRedirect = /*[[${urlToRedirect}]]*/ '';
+            window.location.href = window.urlToRedirect + '?' + window.baseUrlParams;
+        </script>
+    </head>
+    <body>
+    </body>
+</html>
