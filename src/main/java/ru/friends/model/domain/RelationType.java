@@ -9,4 +9,5 @@ public enum RelationType {
     ALL_COMPLICATED,
     IN_ACTIVE_SEARCH,
     FALL_IN_LOVE,
+    IN_CIVIL_MARRIAGE,
 }
